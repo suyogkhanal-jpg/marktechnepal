@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    /* Professional blue-slate palette */
-    --background: 210 20% 98%;
+    /* Pink background palette */
+    --background: 350 100% 95%;
     --foreground: 215 25% 15%;
 
     --card: 0 0% 100%;

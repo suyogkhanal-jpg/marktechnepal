@@ -1,11 +1,19 @@
 import { Receipt } from '@/types/receipt';
 import { StatusBadge } from './StatusBadge';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Eye, Printer, Phone, Calendar } from 'lucide-react';
+import { Eye, Printer } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface ReceiptListProps {
   receipts: Receipt[] | undefined;
@@ -17,7 +25,7 @@ export function ReceiptList({ receipts, isLoading }: ReceiptListProps) {
     return (
       <div className="space-y-3">
         {[...Array(5)].map((_, i) => (
-          <Skeleton key={i} className="h-24 rounded-lg" />
+          <Skeleton key={i} className="h-16 rounded-lg" />
         ))}
       </div>
     );
@@ -34,56 +42,59 @@ export function ReceiptList({ receipts, isLoading }: ReceiptListProps) {
   }
 
   return (
-    <div className="space-y-3">
-      {receipts.map((receipt, index) => (
-        <Card
-          key={receipt.id}
-          className="shadow-card hover:shadow-elevated transition-shadow animate-slide-up"
-          style={{ animationDelay: `${index * 50}ms` }}
-        >
-          <CardContent className="p-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="font-mono text-lg font-bold text-primary">
-                    #{receipt.receipt_number}
-                  </span>
-                  <StatusBadge status={receipt.status} />
+    <Card className="shadow-card overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-primary hover:bg-primary">
+            <TableHead className="text-primary-foreground font-semibold">ID</TableHead>
+            <TableHead className="text-primary-foreground font-semibold">Customer</TableHead>
+            <TableHead className="text-primary-foreground font-semibold">Phone</TableHead>
+            <TableHead className="text-primary-foreground font-semibold">Device</TableHead>
+            <TableHead className="text-primary-foreground font-semibold">Date</TableHead>
+            <TableHead className="text-primary-foreground font-semibold">Status</TableHead>
+            <TableHead className="text-primary-foreground font-semibold text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {receipts.map((receipt, index) => (
+            <TableRow
+              key={receipt.id}
+              className="animate-slide-up"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <TableCell className="font-mono font-bold text-primary">
+                #{receipt.receipt_number}
+              </TableCell>
+              <TableCell className="font-medium">{receipt.customer_name}</TableCell>
+              <TableCell className="text-muted-foreground">{receipt.customer_phone}</TableCell>
+              <TableCell className="text-muted-foreground capitalize">
+                {receipt.device_type} {receipt.device_model && `- ${receipt.device_model}`}
+              </TableCell>
+              <TableCell className="text-muted-foreground">
+                {format(new Date(receipt.received_date), 'MMM d, yyyy')}
+              </TableCell>
+              <TableCell>
+                <StatusBadge status={receipt.status} />
+              </TableCell>
+              <TableCell className="text-right">
+                <div className="flex items-center justify-end gap-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to={`/receipt/${receipt.id}`}>
+                      <Eye className="w-4 h-4 mr-1" />
+                      View
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to={`/receipt/${receipt.id}/print`}>
+                      <Printer className="w-4 h-4" />
+                    </Link>
+                  </Button>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-sm">
-                  <div className="flex items-center gap-1.5 text-foreground">
-                    <span className="font-medium truncate">{receipt.customer_name}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>{receipt.customer_phone}</span>
-                  </div>
-                  <div className="text-muted-foreground capitalize">
-                    {receipt.device_type} {receipt.device_model && `- ${receipt.device_model}`}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <Calendar className="w-3.5 h-3.5" />
-                    <span>{format(new Date(receipt.received_date), 'MMM d, yyyy')}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <Link to={`/receipt/${receipt.id}`}>
-                    <Eye className="w-4 h-4 mr-1" />
-                    View
-                  </Link>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <Link to={`/receipt/${receipt.id}/print`}>
-                    <Printer className="w-4 h-4" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Card>
   );
 }
