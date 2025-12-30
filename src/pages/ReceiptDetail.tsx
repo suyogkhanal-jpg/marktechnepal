@@ -114,12 +114,6 @@ export default function ReceiptDetail() {
                 <p className="text-sm text-muted-foreground">Phone</p>
                 <p className="font-medium">{receipt.customer_phone}</p>
               </div>
-              {receipt.customer_email && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Email</p>
-                  <p className="font-medium">{receipt.customer_email}</p>
-                </div>
-              )}
             </CardContent>
           </Card>
 

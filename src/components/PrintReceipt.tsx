@@ -7,7 +7,7 @@ interface PrintReceiptProps {
 
 export function PrintReceipt({ receipt }: PrintReceiptProps) {
   return (
-    <div className="receipt-print max-w-2xl mx-auto bg-white text-black p-6 border border-black">
+    <div className="receipt-print max-w-4xl mx-auto bg-white text-black p-8 border border-black print:border-none">
       {/* Header */}
       <div className="text-center border-b-2 border-black pb-4 mb-4">
         <div className="flex justify-center items-center gap-2 mb-1">
@@ -18,7 +18,7 @@ export function PrintReceipt({ receipt }: PrintReceiptProps) {
         </div>
         <p className="text-sm italic">(Entire IT Solution in a single destination)</p>
         <p className="text-xs mt-1">
-          22, Tadhahiti Galli, New Road, Kathmandu, Nepal
+          22, Tadhahiti Galli, New Road, Kathmandu, Nepal.
         </p>
         <p className="text-xs">
           Tel: +977-1-4220125, 4239184 | Email: marinetrading2077@gmail.com
@@ -62,17 +62,13 @@ export function PrintReceipt({ receipt }: PrintReceiptProps) {
         </div>
         <div className="grid grid-cols-2 border-b border-black">
           <div className="p-2 border-r border-black">
-            <span className="font-medium">E-mail: </span>
-            <span className="border-b border-dotted border-black">{receipt.customer_email || '...................'}</span>
-          </div>
-          <div className="p-2">
             <span className="font-medium">Model No.: </span>
             <span className="border-b border-dotted border-black">{receipt.device_model || '...................'}</span>
           </div>
-        </div>
-        <div className="p-2">
-          <span className="font-medium">Serial No.: </span>
-          <span className="border-b border-dotted border-black">{receipt.serial_number || '...................'}</span>
+          <div className="p-2">
+            <span className="font-medium">Serial No.: </span>
+            <span className="border-b border-dotted border-black">{receipt.serial_number || '...................'}</span>
+          </div>
         </div>
       </div>
 
@@ -82,7 +78,7 @@ export function PrintReceipt({ receipt }: PrintReceiptProps) {
           <tr>
             <th className="border border-black p-2 text-left w-1/2">Particulars</th>
             <th className="border border-black p-2 text-left w-1/3">Problem</th>
-            <th className="border border-black p-2 text-center w-16">Qty.</th>
+            <th className="border border-black p-2 text-center w-20">Qty.</th>
           </tr>
         </thead>
         <tbody>
@@ -94,15 +90,8 @@ export function PrintReceipt({ receipt }: PrintReceiptProps) {
             <td className="border border-black p-2 align-top">
               {receipt.problem_description}
             </td>
-            <td className="border border-black p-2 text-center align-top">1</td>
+            <td className="border border-black p-2 text-center align-middle font-medium text-lg">1</td>
           </tr>
-          {receipt.repair_notes && (
-            <tr>
-              <td colSpan={3} className="border border-black p-2">
-                <span className="font-medium">Repair Notes: </span>{receipt.repair_notes}
-              </td>
-            </tr>
-          )}
         </tbody>
       </table>
 
