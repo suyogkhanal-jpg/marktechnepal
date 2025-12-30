@@ -54,13 +54,11 @@ export function useCreateReceipt() {
       const insertData = {
         customer_name: formData.customer_name,
         customer_phone: formData.customer_phone,
-        customer_email: formData.customer_email || null,
         device_type: formData.device_type,
         device_model: formData.device_model || null,
         serial_number: formData.serial_number || null,
         accessories: formData.accessories || null,
         problem_description: formData.problem_description,
-        repair_notes: formData.repair_notes || null,
         estimated_delivery_date: formData.estimated_delivery_date || null,
         device_password: formData.device_password || null,
       } as any;

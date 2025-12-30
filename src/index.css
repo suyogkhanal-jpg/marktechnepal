@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    /* Pink background palette */
-    --background: 350 100% 95%;
+    /* Pure white background */
+    --background: 0 0% 100%;
     --foreground: 215 25% 15%;
 
     --card: 0 0% 100%;
@@ -198,6 +198,11 @@
 }
 
 @media print {
+  @page {
+    size: B4;
+    margin: 15mm;
+  }
+
   body {
     background: white !important;
   }
@@ -209,5 +214,7 @@
   .receipt-print {
     box-shadow: none !important;
     border: none !important;
+    max-width: 100% !important;
+    padding: 0 !important;
   }
 }

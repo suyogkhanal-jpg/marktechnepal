@@ -24,13 +24,11 @@ export interface Receipt {
 export interface ReceiptFormData {
   customer_name: string;
   customer_phone: string;
-  customer_email?: string;
   device_type: string;
   device_model?: string;
   serial_number?: string;
   accessories?: string;
   problem_description: string;
-  repair_notes?: string;
   estimated_delivery_date?: string;
   device_password?: string;
 }

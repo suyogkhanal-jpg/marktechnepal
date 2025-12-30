@@ -10,17 +10,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useCreateReceipt } from '@/hooks/useReceipts';
 import { ReceiptFormData } from '@/types/receipt';
 import { Loader2, Save, User, Laptop, FileText } from 'lucide-react';
+import { CustomerAutocomplete } from '@/components/CustomerAutocomplete';
 
 const formSchema = z.object({
   customer_name: z.string().min(1, 'Customer name is required').max(100),
   customer_phone: z.string().min(1, 'Phone number is required').max(20),
-  customer_email: z.string().email('Invalid email').optional().or(z.literal('')),
   device_type: z.string().min(1, 'Device type is required'),
   device_model: z.string().optional(),
   serial_number: z.string().optional(),
   accessories: z.string().optional(),
   problem_description: z.string().min(1, 'Problem description is required').max(1000),
-  repair_notes: z.string().optional(),
   estimated_delivery_date: z.string().optional(),
   device_password: z.string().optional(),
 });
@@ -37,6 +36,7 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<ReceiptFormData>({
     resolver: zodResolver(formSchema),
@@ -45,10 +45,17 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
     },
   });
 
+  const customerName = watch('customer_name') || '';
+
   const onSubmit = async (data: ReceiptFormData) => {
     const result = await createReceipt.mutateAsync(data);
     reset();
     onSuccess?.(result.id);
+  };
+
+  const handleSelectCustomer = (name: string, phone: string) => {
+    setValue('customer_name', name);
+    setValue('customer_phone', phone);
   };
 
   return (
@@ -61,14 +68,15 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
             Customer Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="customer_name">Customer Name *</Label>
-            <Input
-              id="customer_name"
-              {...register('customer_name')}
+            <CustomerAutocomplete
+              value={customerName}
+              onChange={(value) => setValue('customer_name', value)}
+              onSelectCustomer={handleSelectCustomer}
               placeholder="Enter customer name"
-              className={errors.customer_name ? 'border-destructive' : ''}
+              error={!!errors.customer_name}
             />
             {errors.customer_name && (
               <p className="text-xs text-destructive">{errors.customer_name.message}</p>
@@ -84,19 +92,6 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
             />
             {errors.customer_phone && (
               <p className="text-xs text-destructive">{errors.customer_phone.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="customer_email">Email (Optional)</Label>
-            <Input
-              id="customer_email"
-              type="email"
-              {...register('customer_email')}
-              placeholder="Enter email address"
-              className={errors.customer_email ? 'border-destructive' : ''}
-            />
-            {errors.customer_email && (
-              <p className="text-xs text-destructive">{errors.customer_email.message}</p>
             )}
           </div>
         </CardContent>
@@ -165,12 +160,12 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
         </CardContent>
       </Card>
 
-      {/* Problem & Notes */}
+      {/* Problem Description */}
       <Card className="shadow-card">
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2 text-lg">
             <FileText className="w-5 h-5 text-primary" />
-            Problem & Notes
+            Problem Description
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
@@ -186,15 +181,6 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
             {errors.problem_description && (
               <p className="text-xs text-destructive">{errors.problem_description.message}</p>
             )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="repair_notes">Repair Notes</Label>
-            <Textarea
-              id="repair_notes"
-              {...register('repair_notes')}
-              placeholder="Additional notes..."
-              rows={4}
-            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="estimated_delivery_date">Estimated Delivery Date</Label>
