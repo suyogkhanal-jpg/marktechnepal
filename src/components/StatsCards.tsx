@@ -1,7 +1,8 @@
 import { useReceiptStats } from '@/hooks/useReceipts';
 import { Card, CardContent } from '@/components/ui/card';
-import { Inbox, Wrench, CheckCircle, Truck, Users } from 'lucide-react';
+import { Inbox, Wrench, CheckCircle, Truck } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AnimatedCircularCounter } from './AnimatedCircularCounter';
 
 export function StatsCards() {
   const { data: stats, isLoading } = useReceiptStats();
@@ -45,18 +46,8 @@ export function StatsCards() {
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-      {/* Total Customers Circular Card */}
-      <Card className="shadow-card bg-gradient-to-br from-primary/10 to-primary/5 lg:row-span-1">
-        <CardContent className="p-4 flex flex-col items-center justify-center h-full">
-          <div className="w-20 h-20 rounded-full bg-primary/20 border-4 border-primary flex items-center justify-center mb-2">
-            <span className="text-2xl font-bold text-primary">{stats?.total || 0}</span>
-          </div>
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <Users className="w-4 h-4" />
-            <span>Total Customers</span>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Animated Circular Counter for Total Customers */}
+      <AnimatedCircularCounter value={stats?.total || 0} />
 
       {/* Status Cards */}
       {cards.map((card) => (
