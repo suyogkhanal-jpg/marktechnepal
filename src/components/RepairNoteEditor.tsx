@@ -27,8 +27,10 @@ export function RepairNoteEditor({ receiptId, currentNote, status }: RepairNoteE
     return null;
   }
 
-  // Check if repair is complete (can add/edit notes)
-  const canEditNote = status === 'completed' || status === 'delivered' || status === 'in_progress';
+  // Check if repair is in progress or beyond (can view/edit notes)
+  const canViewNote = status === 'completed' || status === 'delivered' || status === 'in_progress';
+  // Only admin can edit
+  const canEditNote = isAdmin && canViewNote;
 
   const handleSave = async () => {
     if (!isAdmin) {
@@ -76,7 +78,7 @@ export function RepairNoteEditor({ receiptId, currentNote, status }: RepairNoteE
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {!canEditNote && status === 'received' ? (
+        {!canViewNote ? (
           <div className="flex items-center gap-2 text-muted-foreground py-4">
             <Lock className="w-4 h-4" />
             <span className="text-sm">
@@ -87,19 +89,24 @@ export function RepairNoteEditor({ receiptId, currentNote, status }: RepairNoteE
           <>
             <div className="space-y-2">
               <Label htmlFor="repair-note">Technician Notes</Label>
-              <Textarea
-                id="repair-note"
-                placeholder="Enter detailed repair notes here..."
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                disabled={!isAdmin}
-                rows={4}
-                className="resize-none"
-              />
+              {isAdmin ? (
+                <Textarea
+                  id="repair-note"
+                  placeholder="Enter detailed repair notes here..."
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  rows={4}
+                  className="resize-none"
+                />
+              ) : (
+                <div className="p-3 bg-muted/50 rounded-md min-h-[100px] text-sm">
+                  {note || <span className="text-muted-foreground italic">No repair notes added yet</span>}
+                </div>
+              )}
               {!isAdmin && (
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <Lock className="w-3 h-3" />
-                  Only admins can edit repair notes
+                  Only admins can add or edit repair notes
                 </p>
               )}
             </div>
