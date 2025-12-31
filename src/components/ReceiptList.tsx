@@ -46,7 +46,8 @@ export function ReceiptList({ receipts, isLoading }: ReceiptListProps) {
       <Table>
         <TableHeader>
           <TableRow className="bg-primary hover:bg-primary">
-            <TableHead className="text-primary-foreground font-semibold">ID</TableHead>
+            <TableHead className="text-primary-foreground font-semibold w-16">S.N.</TableHead>
+            <TableHead className="text-primary-foreground font-semibold">Receipt #</TableHead>
             <TableHead className="text-primary-foreground font-semibold">Customer</TableHead>
             <TableHead className="text-primary-foreground font-semibold">Phone</TableHead>
             <TableHead className="text-primary-foreground font-semibold">Device</TableHead>
@@ -62,6 +63,9 @@ export function ReceiptList({ receipts, isLoading }: ReceiptListProps) {
               className="animate-slide-up"
               style={{ animationDelay: `${index * 50}ms` }}
             >
+              <TableCell className="font-mono font-bold text-muted-foreground">
+                {index + 1}
+              </TableCell>
               <TableCell className="font-mono font-bold text-primary">
                 #{receipt.receipt_number}
               </TableCell>
