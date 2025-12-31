@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { StatusBadge } from '@/components/StatusBadge';
 import { useReceipt, useUpdateReceiptStatus } from '@/hooks/useReceipts';
+import { RepairNoteEditor } from '@/components/RepairNoteEditor';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -114,6 +115,7 @@ export default function ReceiptDetail() {
                 <p className="text-sm text-muted-foreground">Phone</p>
                 <p className="font-medium">{receipt.customer_phone}</p>
               </div>
+              {/* Customer ID is hidden as per requirement */}
             </CardContent>
           </Card>
 
@@ -170,21 +172,15 @@ export default function ReceiptDetail() {
             </CardContent>
           </Card>
 
-          {/* Repair Notes & Dates */}
+          {/* Dates */}
           <Card className="shadow-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <Calendar className="w-5 h-5 text-primary" />
-                Repair Notes & Dates
+                Important Dates
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {receipt.repair_notes && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Repair Notes</p>
-                  <p className="font-medium">{receipt.repair_notes}</p>
-                </div>
-              )}
               {receipt.estimated_delivery_date && (
                 <div>
                   <p className="text-sm text-muted-foreground">Estimated Delivery</p>
@@ -204,6 +200,13 @@ export default function ReceiptDetail() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Repair Notes - Admin Only Section (not printed) */}
+        <RepairNoteEditor 
+          receiptId={receipt.id}
+          currentNote={receipt.repair_notes}
+          status={receipt.status}
+        />
       </main>
     </div>
   );
