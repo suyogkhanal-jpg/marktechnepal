@@ -104,32 +104,38 @@ export function PrintReceipt({ receipt }: PrintReceiptProps) {
       )}
 
       {/* Terms & Conditions */}
-      <div className="border-t border-black pt-3 mb-6">
+      <div className="border-t border-black pt-3 mb-2">
         <p className="text-xs leading-relaxed">
-          सूचना: सामान लिँदा यस नक्कल सक्कल भौचर अनिवार्य रुपमा लिएर आउनु पर्नेछ । भौचर बिना सामान बुझाईने छैन । 
-          यदि कुनै कारणले मर्मत नभएमा मर्मत शुल्क लाग्ने छ । सामान आफैले लिन नआएमा हुने नोक्सानीको जिम्मेवार यस कम्पनी हुने छैन ।
-          अनिवार्य अधिकतम् अवधि ९० दिन (VAT) लाग्नेछ ।
+          सूचना: सामान लिन आँउदा यो रसिद अनिवार्य छ । मर्मतको लागि घाडेको सामान मर्मत भईसकेको ४५ दिन सम्ममा नलगी कुनै किसिमको हानीनोक्सानी भएमा कम्पनी जवाफदेही हुने छैन ।
+        </p>
+        <p className="text-xs font-bold text-center mt-1">
+          मर्मत खर्चमा अतिरिक्त मूल्य अभिवृद्धि कर (VAT) लाग्नेछ ।
         </p>
       </div>
 
       {/* Signatures */}
-      <div className="flex justify-between mt-8 mb-6">
+      <div className="flex justify-between mt-6 mb-4">
         <div className="text-center">
-          <div className="w-44 border-t border-black pt-2">
-            <span className="text-sm">ग्राहकको हस्ताक्षर</span>
+          <div className="w-36 border-t border-black pt-2">
+            <span className="text-xs">सामान बुझाउनेको सही</span>
           </div>
         </div>
         <div className="text-center">
-          <div className="w-44 border-t border-black pt-2">
-            <span className="text-sm">For: NLS</span>
+          <div className="w-36 border-t border-black pt-2">
+            <span className="text-xs">For: NLS</span>
+          </div>
+        </div>
+        <div className="text-center">
+          <div className="w-36 border-t border-black pt-2">
+            <span className="text-xs">सामान फिर्ता बुझिलिनेको सही</span>
           </div>
         </div>
       </div>
 
       {/* Footer */}
       <div className="text-center text-xs border-t border-black pt-3">
-        <p className="font-bold">Laptop, Motherboard, Monitor तथा सम्पूर्ण Computer Accessories को लागि</p>
-        <p className="italic">Laptop Accessories Wholesale तथा Retail</p>
+        <p className="font-bold">Laptop, Motherboard, Monitor तथा सम्पूर्ण Computer Accessories मर्मत</p>
+        <p className="mt-1 inline-block border border-black rounded px-3 py-1">Laptop Accessories Wholesale तथा Retail</p>
       </div>
     </div>
   );
