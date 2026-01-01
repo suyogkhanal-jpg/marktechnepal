@@ -76,13 +76,14 @@ export function PrintReceipt({ receipt }: PrintReceiptProps) {
       <table className="w-full border-collapse border border-black mb-4">
         <thead>
           <tr>
-            <th className="border border-black p-2 text-left w-1/2">Particulars</th>
-            <th className="border border-black p-2 text-left w-1/3">Problem</th>
-            <th className="border border-black p-2 text-center w-20">Qty.</th>
+            <th className="border border-black p-2 text-center w-16">Qty.</th>
+            <th className="border border-black p-2 text-left">Particulars</th>
+            <th className="border border-black p-2 text-left">Problem</th>
           </tr>
         </thead>
         <tbody>
           <tr>
+            <td className="border border-black p-2 text-center align-middle font-medium text-lg">1</td>
             <td className="border border-black p-2 align-top min-h-[100px]">
               <div className="font-medium capitalize">{receipt.device_type}</div>
               {receipt.accessories && <div className="text-sm mt-1">{receipt.accessories}</div>}
@@ -90,7 +91,6 @@ export function PrintReceipt({ receipt }: PrintReceiptProps) {
             <td className="border border-black p-2 align-top">
               {receipt.problem_description}
             </td>
-            <td className="border border-black p-2 text-center align-middle font-medium text-lg">1</td>
           </tr>
         </tbody>
       </table>
