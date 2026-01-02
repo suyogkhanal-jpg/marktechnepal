@@ -105,7 +105,7 @@ export function PrintReceipt({ receipt }: PrintReceiptProps) {
 
       {/* Terms & Conditions */}
       <div className="border-t border-black pt-3 mb-2">
-        <p className="text-xs leading-relaxed">
+        <p className="text-xs leading-relaxed font-bold">
           सूचना: सामान लिन आउँदा यो रसिद अनिवार्य रूपमा ल्याउनुहोला। मर्मतका लागि छाडिएको सामान मर्मत सम्पन्न भएको मितिले १५ दिनभित्र नलगेमा त्यसपछि हुने कुनै पनि किसिमको हानी–नोक्सानीको जिम्मेवारी कम्पनीले लिने छैन। मर्मत खर्चमा अतिरिक्त मूल्य अभिवृद्धि कर (VAT) लाग्नेछ।
         </p>
       </div>
