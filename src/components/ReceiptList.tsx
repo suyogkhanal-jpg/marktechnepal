@@ -1,7 +1,7 @@
 import { Receipt } from '@/types/receipt';
 import { StatusBadge } from './StatusBadge';
 import { Button } from '@/components/ui/button';
-import { Eye, Printer } from 'lucide-react';
+import { Eye, Printer, Pencil } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -86,6 +86,12 @@ export function ReceiptList({ receipts, isLoading }: ReceiptListProps) {
                     <Link to={`/receipt/${receipt.id}`}>
                       <Eye className="w-4 h-4 mr-1" />
                       View
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to={`/receipt/${receipt.id}/edit`}>
+                      <Pencil className="w-4 h-4 mr-1" />
+                      Edit
                     </Link>
                   </Button>
                   <Button variant="outline" size="sm" asChild>

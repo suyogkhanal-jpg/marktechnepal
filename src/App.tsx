@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import NewReceipt from "./pages/NewReceipt";
+import EditReceipt from "./pages/EditReceipt";
 import ReceiptDetail from "./pages/ReceiptDetail";
 import PrintReceiptPage from "./pages/PrintReceiptPage";
 import Auth from "./pages/Auth";
@@ -58,6 +59,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <ReceiptDetail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/receipt/:id/edit"
+        element={
+          <ProtectedRoute>
+            <EditReceipt />
           </ProtectedRoute>
         }
       />
