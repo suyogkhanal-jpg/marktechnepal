@@ -30,15 +30,30 @@ const Index = () => {
               size="lg"
               onClick={() => {
                 if (receipts && receipts.length > 0) {
-                  exportReceiptsToCsv(receipts, 'receipts_backup');
-                  toast.success('CSV backup downloaded successfully!');
+                  exportReceiptsToCsv(receipts, 'receipts_export');
+                  toast.success('CSV exported successfully!');
                 } else {
                   toast.error('No receipts to export');
                 }
               }}
             >
               <Download className="w-5 h-5 mr-2" />
-              Backup CSV
+              Export CSV
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => {
+                if (receipts && receipts.length > 0) {
+                  exportReceiptsToCsv(receipts, 'receipts_download');
+                  toast.success('CSV downloaded successfully!');
+                } else {
+                  toast.error('No receipts to download');
+                }
+              }}
+            >
+              <Download className="w-5 h-5 mr-2" />
+              Download CSV
             </Button>
             <Button asChild size="lg">
               <Link to="/new">
