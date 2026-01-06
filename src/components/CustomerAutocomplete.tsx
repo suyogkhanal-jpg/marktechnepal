@@ -9,6 +9,7 @@ interface CustomerAutocompleteProps {
   placeholder?: string;
   className?: string;
   error?: boolean;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export function CustomerAutocomplete({
@@ -18,6 +19,7 @@ export function CustomerAutocomplete({
   placeholder = 'Enter customer name',
   className = '',
   error = false,
+  onKeyDown,
 }: CustomerAutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState(value);
@@ -58,6 +60,7 @@ export function CustomerAutocomplete({
         value={inputValue}
         onChange={handleInputChange}
         onFocus={() => inputValue.length >= 2 && setIsOpen(true)}
+        onKeyDown={onKeyDown}
         placeholder={placeholder}
         className={error ? 'border-destructive' : className}
         autoComplete="off"
