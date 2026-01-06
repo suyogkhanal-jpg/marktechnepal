@@ -11,6 +11,7 @@ import { useCreateReceipt } from '@/hooks/useReceipts';
 import { ReceiptFormData } from '@/types/receipt';
 import { Loader2, Save, User, Laptop, FileText } from 'lucide-react';
 import { CustomerAutocomplete } from '@/components/CustomerAutocomplete';
+import { useRef, KeyboardEvent } from 'react';
 
 const formSchema = z.object({
   customer_name: z.string().min(1, 'Customer name is required').max(100),
@@ -30,6 +31,16 @@ interface ReceiptFormProps {
 
 export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
   const createReceipt = useCreateReceipt();
+
+  // Refs for Enter key navigation
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const deviceTypeRef = useRef<HTMLButtonElement>(null);
+  const modelRef = useRef<HTMLInputElement>(null);
+  const serialRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const accessoriesRef = useRef<HTMLInputElement>(null);
+  const problemRef = useRef<HTMLTextAreaElement>(null);
+  const deliveryDateRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -58,8 +69,22 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
     setValue('customer_phone', phone);
   };
 
+  // Handle Enter key to move to next field
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>, nextRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement | null>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      nextRef.current?.focus();
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Header */}
+      <div className="text-center py-4 border-b-2 border-primary">
+        <h1 className="text-3xl font-bold text-primary tracking-wide">Marktech Nepal</h1>
+        <p className="text-muted-foreground italic">Laptop & Computer Repair Center</p>
+      </div>
+
       {/* Customer Information */}
       <Card className="shadow-card">
         <CardHeader className="pb-4">
@@ -77,6 +102,12 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
               onSelectCustomer={handleSelectCustomer}
               placeholder="Enter customer name"
               error={!!errors.customer_name}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  phoneRef.current?.focus();
+                }
+              }}
             />
             {errors.customer_name && (
               <p className="text-xs text-destructive">{errors.customer_name.message}</p>
@@ -87,8 +118,10 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
             <Input
               id="customer_phone"
               {...register('customer_phone')}
+              ref={phoneRef}
               placeholder="Enter phone number"
               className={errors.customer_phone ? 'border-destructive' : ''}
+              onKeyDown={(e) => handleKeyDown(e, deviceTypeRef)}
             />
             {errors.customer_phone && (
               <p className="text-xs text-destructive">{errors.customer_phone.message}</p>
@@ -107,10 +140,16 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-2">
-            <Label htmlFor="device_type">Device Type *</Label>
-            <Select onValueChange={(value) => setValue('device_type', value)}>
-              <SelectTrigger className={errors.device_type ? 'border-destructive' : ''}>
-                <SelectValue placeholder="Select type" />
+            <Label htmlFor="device_type">Device Name *</Label>
+            <Select onValueChange={(value) => {
+              setValue('device_type', value);
+              setTimeout(() => modelRef.current?.focus(), 100);
+            }}>
+              <SelectTrigger 
+                ref={deviceTypeRef}
+                className={errors.device_type ? 'border-destructive' : ''}
+              >
+                <SelectValue placeholder="Select device" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="laptop">Laptop</SelectItem>
@@ -126,11 +165,13 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="device_model">Model</Label>
+            <Label htmlFor="device_model">Model Number</Label>
             <Input
               id="device_model"
               {...register('device_model')}
+              ref={modelRef}
               placeholder="e.g., Dell Inspiron 15"
+              onKeyDown={(e) => handleKeyDown(e, serialRef)}
             />
           </div>
           <div className="space-y-2">
@@ -138,7 +179,9 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
             <Input
               id="serial_number"
               {...register('serial_number')}
+              ref={serialRef}
               placeholder="Enter serial number"
+              onKeyDown={(e) => handleKeyDown(e, passwordRef)}
             />
           </div>
           <div className="space-y-2">
@@ -146,7 +189,9 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
             <Input
               id="device_password"
               {...register('device_password')}
+              ref={passwordRef}
               placeholder="Device password"
+              onKeyDown={(e) => handleKeyDown(e, accessoriesRef)}
             />
           </div>
           <div className="space-y-2 sm:col-span-2 lg:col-span-4">
@@ -154,7 +199,9 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
             <Input
               id="accessories"
               {...register('accessories')}
+              ref={accessoriesRef}
               placeholder="e.g., Charger, Mouse, Bag"
+              onKeyDown={(e) => handleKeyDown(e, problemRef)}
             />
           </div>
         </CardContent>
@@ -165,7 +212,7 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2 text-lg">
             <FileText className="w-5 h-5 text-primary" />
-            Problem Description
+            Problem Description / Remarks
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
@@ -174,9 +221,16 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
             <Textarea
               id="problem_description"
               {...register('problem_description')}
+              ref={problemRef}
               placeholder="Describe the issue..."
               rows={4}
               className={errors.problem_description ? 'border-destructive' : ''}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  deliveryDateRef.current?.focus();
+                }
+              }}
             />
             {errors.problem_description && (
               <p className="text-xs text-destructive">{errors.problem_description.message}</p>
@@ -188,6 +242,7 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
               id="estimated_delivery_date"
               type="date"
               {...register('estimated_delivery_date')}
+              ref={deliveryDateRef}
             />
           </div>
         </CardContent>
