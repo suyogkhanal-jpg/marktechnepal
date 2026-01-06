@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useCreateReceipt } from '@/hooks/useReceipts';
 import { ReceiptFormData } from '@/types/receipt';
-import { Loader2, Save, User, Laptop, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Save, User, Laptop } from 'lucide-react';
 import { CustomerAutocomplete } from '@/components/CustomerAutocomplete';
 import { useRef, KeyboardEvent, useState } from 'react';
 
@@ -19,10 +19,10 @@ const formSchema = z.object({
   device_type: z.string().min(1, 'Device name is required'),
   device_model: z.string().optional(),
   serial_number: z.string().optional(),
-  accessories: z.string().optional(),
+  has_password_lock: z.boolean().optional(),
+  has_accessories: z.boolean().optional(),
   problem_description: z.string().min(1, 'Problem description is required').max(1000),
   estimated_delivery_date: z.string().optional(),
-  device_password: z.string().optional(),
 });
 
 interface ReceiptFormProps {
@@ -49,33 +49,15 @@ const deviceSuggestions = [
   'Workstation',
 ];
 
-// Accessories suggestions
-const accessorySuggestions = [
-  'Charger',
-  'Power Adapter',
-  'Mouse',
-  'Keyboard',
-  'Laptop Bag',
-  'USB Cable',
-  'HDMI Cable',
-  'Battery',
-  'Earphones',
-  'Webcam',
-];
 
 export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
   const createReceipt = useCreateReceipt();
-  const [showPassword, setShowPassword] = useState(false);
   const [deviceSuggestionsOpen, setDeviceSuggestionsOpen] = useState(false);
-  const [accessorySuggestionsOpen, setAccessorySuggestionsOpen] = useState(false);
   const [filteredDevices, setFilteredDevices] = useState<string[]>([]);
-  const [filteredAccessories, setFilteredAccessories] = useState<string[]>([]);
 
   // Refs for Enter key navigation
   const phoneRef = useRef<HTMLInputElement>(null);
   const deviceNameRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const accessoriesRef = useRef<HTMLInputElement>(null);
   const modelRef = useRef<HTMLInputElement>(null);
   const serialRef = useRef<HTMLInputElement>(null);
   const problemRef = useRef<HTMLTextAreaElement>(null);
@@ -92,12 +74,15 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       device_type: '',
+      has_password_lock: false,
+      has_accessories: false,
     },
   });
 
   const customerName = watch('customer_name') || '';
   const deviceType = watch('device_type') || '';
-  const accessories = watch('accessories') || '';
+  const hasPasswordLock = watch('has_password_lock') || false;
+  const hasAccessories = watch('has_accessories') || false;
 
   const onSubmit = async (data: ReceiptFormData) => {
     const result = await createReceipt.mutateAsync(data);
@@ -132,35 +117,10 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
     }
   };
 
-  // Handle accessories input with suggestions
-  const handleAccessoriesChange = (value: string) => {
-    setValue('accessories', value);
-    const lastWord = value.split(',').pop()?.trim() || '';
-    if (lastWord.length > 0) {
-      const filtered = accessorySuggestions.filter(a => 
-        a.toLowerCase().includes(lastWord.toLowerCase())
-      );
-      setFilteredAccessories(filtered);
-      setAccessorySuggestionsOpen(filtered.length > 0);
-    } else {
-      setAccessorySuggestionsOpen(false);
-    }
-  };
-
   const selectDeviceSuggestion = (suggestion: string) => {
     setValue('device_type', suggestion);
     setDeviceSuggestionsOpen(false);
-    passwordRef.current?.focus();
-  };
-
-  const selectAccessorySuggestion = (suggestion: string) => {
-    const currentValue = accessories;
-    const parts = currentValue.split(',').map(p => p.trim()).filter(p => p);
-    parts.pop();
-    parts.push(suggestion);
-    setValue('accessories', parts.join(', '));
-    setAccessorySuggestionsOpen(false);
-    accessoriesRef.current?.focus();
+    modelRef.current?.focus();
   };
 
   return (
@@ -239,7 +199,7 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
                 if (e.key === 'Enter') {
                   e.preventDefault();
                   setDeviceSuggestionsOpen(false);
-                  passwordRef.current?.focus();
+                  modelRef.current?.focus();
                 }
                 if (e.key === 'Escape') {
                   setDeviceSuggestionsOpen(false);
@@ -267,94 +227,52 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
             )}
           </div>
 
-          {/* Password with Show/Hide Toggle */}
+          {/* Inline Indicators - Checkboxes side by side */}
+          <div className="flex items-center gap-6 py-2 px-3 bg-muted/50 rounded-md border border-border/50">
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="has_password_lock"
+                checked={hasPasswordLock}
+                onCheckedChange={(checked) => setValue('has_password_lock', checked === true)}
+              />
+              <Label htmlFor="has_password_lock" className="text-sm font-medium cursor-pointer">
+                Password Lock
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="has_accessories"
+                checked={hasAccessories}
+                onCheckedChange={(checked) => setValue('has_accessories', checked === true)}
+              />
+              <Label htmlFor="has_accessories" className="text-sm font-medium cursor-pointer">
+                Accessories
+              </Label>
+            </div>
+          </div>
+
+          {/* Model Number */}
           <div className="space-y-2">
-            <Label htmlFor="device_password">Password / Lock</Label>
-            <div className="flex gap-3 items-center">
-              <div className="flex-1 relative">
-                <Input
-                  id="device_password"
-                  {...register('device_password')}
-                  ref={passwordRef}
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Device password or lock code"
-                  onKeyDown={(e) => handleKeyDown(e, accessoriesRef)}
-                />
-              </div>
-              <div className="flex items-center gap-2 min-w-fit">
-                <Checkbox
-                  id="show_password"
-                  checked={showPassword}
-                  onCheckedChange={(checked) => setShowPassword(checked === true)}
-                />
-                <Label htmlFor="show_password" className="text-sm cursor-pointer flex items-center gap-1">
-                  {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                  Show
-                </Label>
-              </div>
-            </div>
-          </div>
-
-          {/* Accessories with Autocomplete */}
-          <div className="space-y-2 relative">
-            <Label htmlFor="accessories">Accessories</Label>
+            <Label htmlFor="device_model">Model Number</Label>
             <Input
-              id="accessories"
-              ref={accessoriesRef}
-              value={accessories}
-              onChange={(e) => handleAccessoriesChange(e.target.value)}
-              placeholder="e.g., Charger, Mouse, Bag"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  setAccessorySuggestionsOpen(false);
-                  modelRef.current?.focus();
-                }
-                if (e.key === 'Escape') {
-                  setAccessorySuggestionsOpen(false);
-                }
-              }}
-              onBlur={() => setTimeout(() => setAccessorySuggestionsOpen(false), 150)}
-              autoComplete="off"
+              id="device_model"
+              {...register('device_model')}
+              ref={modelRef}
+              placeholder="e.g., Inspiron 15 3520"
+              onKeyDown={(e) => handleKeyDown(e, serialRef)}
             />
-            {accessorySuggestionsOpen && filteredAccessories.length > 0 && (
-              <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-48 overflow-auto">
-                {filteredAccessories.map((suggestion, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    className="w-full px-3 py-2 text-left text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
-                    onMouseDown={() => selectAccessorySuggestion(suggestion)}
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
-          {/* Model Number and Serial Number in a row */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="device_model">Model Number</Label>
-              <Input
-                id="device_model"
-                {...register('device_model')}
-                ref={modelRef}
-                placeholder="e.g., Inspiron 15 3520"
-                onKeyDown={(e) => handleKeyDown(e, serialRef)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="serial_number">Serial Number</Label>
-              <Input
-                id="serial_number"
-                {...register('serial_number')}
-                ref={serialRef}
-                placeholder="Enter serial number"
-                onKeyDown={(e) => handleKeyDown(e, problemRef)}
-              />
-            </div>
+          {/* Serial Number */}
+          <div className="space-y-2">
+            <Label htmlFor="serial_number">Serial Number</Label>
+            <Input
+              id="serial_number"
+              {...register('serial_number')}
+              ref={serialRef}
+              placeholder="Enter serial number"
+              onKeyDown={(e) => handleKeyDown(e, problemRef)}
+            />
           </div>
 
           {/* Problem Description */}
