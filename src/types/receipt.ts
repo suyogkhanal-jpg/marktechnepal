@@ -27,8 +27,11 @@ export interface ReceiptFormData {
   device_type: string;
   device_model?: string;
   serial_number?: string;
-  accessories?: string;
+  has_password_lock?: boolean;
+  has_accessories?: boolean;
   problem_description: string;
   estimated_delivery_date?: string;
+  // For database compatibility - these are derived from booleans
+  accessories?: string;
   device_password?: string;
 }

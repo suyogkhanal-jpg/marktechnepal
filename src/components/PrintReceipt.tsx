@@ -88,18 +88,26 @@ export function PrintReceipt({ receipt }: PrintReceiptProps) {
       {/* Device Details Box */}
       <div className="border-2 border-black mb-4 p-3">
         <h3 className="font-bold text-sm mb-2 border-b border-black pb-1">DEVICE DETAILS</h3>
-        <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
-          <div>
-            <span className="font-medium">Device Name: </span>
-            <span className="capitalize">{receipt.device_type || '...................'}</span>
-          </div>
-          <div>
-            <span className="font-medium">Password: </span>
-            <span>{receipt.device_password || '...................'}</span>
-          </div>
-          <div>
-            <span className="font-medium">Accessories: </span>
-            <span>{receipt.accessories || '...................'}</span>
+        <div className="space-y-2 text-sm">
+          <div className="flex gap-8">
+            <div className="flex-1">
+              <span className="font-medium">Device Name: </span>
+              <span className="capitalize">{receipt.device_type || '...................'}</span>
+            </div>
+            <div className="flex gap-6">
+              <div className="flex items-center gap-1">
+                <span className="inline-block w-4 h-4 border border-black text-center text-xs leading-4">
+                  {receipt.device_password ? '✓' : ''}
+                </span>
+                <span className="font-medium">Password Lock</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="inline-block w-4 h-4 border border-black text-center text-xs leading-4">
+                  {receipt.accessories ? '✓' : ''}
+                </span>
+                <span className="font-medium">Accessories</span>
+              </div>
+            </div>
           </div>
           <div>
             <span className="font-medium">Model No.: </span>
