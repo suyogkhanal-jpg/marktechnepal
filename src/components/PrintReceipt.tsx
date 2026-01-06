@@ -88,10 +88,18 @@ export function PrintReceipt({ receipt }: PrintReceiptProps) {
       {/* Device Details Box */}
       <div className="border-2 border-black mb-4 p-3">
         <h3 className="font-bold text-sm mb-2 border-b border-black pb-1">DEVICE DETAILS</h3>
-        <div className="grid grid-cols-3 gap-4 text-sm">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
           <div>
             <span className="font-medium">Device Name: </span>
             <span className="capitalize">{receipt.device_type || '...................'}</span>
+          </div>
+          <div>
+            <span className="font-medium">Password: </span>
+            <span>{receipt.device_password || '...................'}</span>
+          </div>
+          <div>
+            <span className="font-medium">Accessories: </span>
+            <span>{receipt.accessories || '...................'}</span>
           </div>
           <div>
             <span className="font-medium">Model No.: </span>
