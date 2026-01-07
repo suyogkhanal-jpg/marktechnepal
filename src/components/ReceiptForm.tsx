@@ -85,6 +85,8 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
     formState: { errors },
   } = useForm<ReceiptFormData>({
     resolver: zodResolver(formSchema),
+    mode: 'onSubmit',
+    reValidateMode: 'onBlur',
     defaultValues: {
       device_type: '',
       has_password_lock: false,
