@@ -22,7 +22,7 @@ const formSchema = z.object({
   has_password_lock: z.boolean().optional(),
   device_password: z.string().optional(),
   accessories: z.string().optional(),
-  problem_description: z.string().min(1).max(1000),
+  problem_description: z.string().max(1000).optional(),
   estimated_delivery_date: z.string().optional(),
 });
 
@@ -66,6 +66,7 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
   const [filteredDevices, setFilteredDevices] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState(false);
   const [selectedAccessories, setSelectedAccessories] = useState<string[]>([]);
+  const [nextDevice, setNextDevice] = useState(false);
 
   // Refs for Enter key navigation
   const phoneRef = useRef<HTMLInputElement>(null);
@@ -107,14 +108,29 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
     
     const submitData = {
       ...data,
+      problem_description: data.problem_description || '',
       accessories: accessoriesString,
       device_password: hasPasswordLock ? data.device_password : null,
     };
     
     const result = await createReceipt.mutateAsync(submitData);
-    reset();
-    setSelectedAccessories([]);
-    onSuccess?.(result.id);
+    
+    if (nextDevice) {
+      // Keep customer details, reset device fields
+      const customerName = data.customer_name;
+      const customerPhone = data.customer_phone;
+      reset();
+      setValue('customer_name', customerName);
+      setValue('customer_phone', customerPhone);
+      setSelectedAccessories([]);
+      setShowPassword(false);
+      // Focus on device name for next entry
+      setTimeout(() => deviceNameRef.current?.focus(), 100);
+    } else {
+      reset();
+      setSelectedAccessories([]);
+      onSuccess?.(result.id);
+    }
   };
 
   const handleSelectCustomer = (name: string, phone: string) => {
@@ -376,9 +392,8 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
               id="problem_description"
               {...register('problem_description')}
               ref={problemRef}
-              placeholder="Describe the issue in detail..."
+              placeholder="Describe the issue..."
               rows={4}
-              className={errors.problem_description ? 'border-destructive' : ''}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -401,21 +416,36 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
         </CardContent>
       </Card>
 
-      <div className="flex justify-end">
-        <Button type="submit" size="lg" disabled={createReceipt.isPending}>
-          {createReceipt.isPending ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Creating...
-            </>
-          ) : (
-            <>
-              <Save className="w-4 h-4 mr-2" />
-              Create Receipt
-            </>
-          )}
-        </Button>
-      </div>
+      {/* Next Device Checkbox */}
+      <Card className="shadow-card border border-primary/30 bg-primary/5">
+        <CardContent className="py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Checkbox
+                id="next_device"
+                checked={nextDevice}
+                onCheckedChange={(checked) => setNextDevice(checked === true)}
+              />
+              <Label htmlFor="next_device" className="text-sm font-medium cursor-pointer">
+                Next Device (Add another device for the same customer)
+              </Label>
+            </div>
+            <Button type="submit" size="lg" disabled={createReceipt.isPending}>
+              {createReceipt.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  {nextDevice ? 'Save & Add Next' : 'Create Receipt'}
+                </>
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </form>
   );
 }
