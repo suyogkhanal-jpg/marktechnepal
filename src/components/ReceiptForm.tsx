@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useCreateReceipt } from '@/hooks/useReceipts';
 import { Loader2, Save, User, Laptop, Eye, EyeOff, Plus, Trash2 } from 'lucide-react';
 import { CustomerAutocomplete } from '@/components/CustomerAutocomplete';
-import { useRef, useState } from 'react';
+import { useRef, useState, KeyboardEvent } from 'react';
 
 interface ReceiptFormProps {
   onSuccess?: (receiptId: string) => void;
@@ -33,39 +33,25 @@ const deviceSuggestions = [
   'Workstation',
 ];
 
-// Accessory options
-const accessoryOptions = [
-  'Charger',
-  'Bag',
-  'Mouse',
-  'Keyboard',
-  'Power Cable',
-  'USB Cable',
-];
-
 // Device entry type
 interface DeviceEntry {
   id: string;
   device_type: string;
-  device_model: string;
-  serial_number: string;
+  problem_description: string;
+  has_accessories: boolean;
+  accessories_text: string;
   has_password_lock: boolean;
   device_password: string;
-  accessories: string[];
-  problem_description: string;
-  estimated_delivery_date: string;
 }
 
 const createEmptyDevice = (): DeviceEntry => ({
   id: crypto.randomUUID(),
   device_type: '',
-  device_model: '',
-  serial_number: '',
+  problem_description: '',
+  has_accessories: false,
+  accessories_text: '',
   has_password_lock: false,
   device_password: '',
-  accessories: [],
-  problem_description: '',
-  estimated_delivery_date: '',
 });
 
 export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
@@ -78,7 +64,35 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
   const [deviceSuggestions_, setDeviceSuggestions_] = useState<Record<string, string[]>>({});
   const [suggestionOpen, setSuggestionOpen] = useState<Record<string, boolean>>({});
 
+  // Refs for Enter key navigation
   const phoneRef = useRef<HTMLInputElement>(null);
+  const deviceRefs = useRef<Record<string, {
+    deviceName: HTMLInputElement | null;
+    problem: HTMLTextAreaElement | null;
+    accessories: HTMLInputElement | null;
+    password: HTMLInputElement | null;
+  }>>({});
+
+  const setDeviceRef = (deviceId: string, field: 'deviceName' | 'problem' | 'accessories' | 'password', el: HTMLInputElement | HTMLTextAreaElement | null) => {
+    if (!deviceRefs.current[deviceId]) {
+      deviceRefs.current[deviceId] = { deviceName: null, problem: null, accessories: null, password: null };
+    }
+    deviceRefs.current[deviceId][field] = el as any;
+  };
+
+  const handleEnterNavigation = (e: KeyboardEvent, nextFocus: () => void) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      nextFocus();
+    }
+  };
+
+  const focusNextDevice = (currentIndex: number) => {
+    if (currentIndex < devices.length - 1) {
+      const nextDevice = devices[currentIndex + 1];
+      deviceRefs.current[nextDevice.id]?.deviceName?.focus();
+    }
+  };
 
   const handleSelectCustomer = (name: string, phone: string) => {
     setCustomerName(name);
@@ -109,16 +123,6 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
     setSuggestionOpen(prev => ({ ...prev, [deviceId]: false }));
   };
 
-  const handleAccessoryToggle = (deviceId: string, accessory: string, checked: boolean) => {
-    setDevices(prev => prev.map(d => {
-      if (d.id !== deviceId) return d;
-      const newAccessories = checked
-        ? [...d.accessories, accessory]
-        : d.accessories.filter(a => a !== accessory);
-      return { ...d, accessories: newAccessories };
-    }));
-  };
-
   const addDevice = () => {
     setDevices(prev => [...prev, createEmptyDevice()]);
   };
@@ -138,26 +142,20 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
     setIsSubmitting(true);
 
     try {
-      // Create a receipt for each device
       for (let i = 0; i < devices.length; i++) {
         const device = devices[i];
         const submitData = {
           customer_name: customerName || '',
           customer_phone: customerPhone || '',
           device_type: device.device_type || '',
-          device_model: device.device_model || undefined,
-          serial_number: device.serial_number || undefined,
           problem_description: device.problem_description || '',
-          accessories: device.accessories.length > 0 ? device.accessories.join(', ') : null,
-          device_password: device.has_password_lock ? device.device_password : null,
-          estimated_delivery_date: device.estimated_delivery_date || undefined,
+          accessories: device.has_accessories && device.accessories_text ? device.accessories_text : null,
+          device_password: device.has_password_lock && device.device_password ? device.device_password : null,
         };
 
         const result = await createReceipt.mutateAsync(submitData);
         
-        // Only call onSuccess for the last device
         if (i === devices.length - 1) {
-          // Reset form
           setCustomerName('');
           setCustomerPhone('');
           setDevices([createEmptyDevice()]);
@@ -196,12 +194,7 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
               onChange={setCustomerName}
               onSelectCustomer={handleSelectCustomer}
               placeholder="Enter customer name"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  phoneRef.current?.focus();
-                }
-              }}
+              onKeyDown={(e) => handleEnterNavigation(e, () => phoneRef.current?.focus())}
             />
           </div>
           <div className="space-y-2">
@@ -212,6 +205,12 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
               onChange={(e) => setCustomerPhone(e.target.value)}
               ref={phoneRef}
               placeholder="Enter phone number"
+              onKeyDown={(e) => handleEnterNavigation(e, () => {
+                const firstDevice = devices[0];
+                if (firstDevice) {
+                  deviceRefs.current[firstDevice.id]?.deviceName?.focus();
+                }
+              })}
             />
           </div>
         </CardContent>
@@ -245,11 +244,15 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
             <div className="space-y-2 relative">
               <Label>Device Name</Label>
               <Input
+                ref={(el) => setDeviceRef(device.id, 'deviceName', el)}
                 value={device.device_type}
                 onChange={(e) => handleDeviceNameChange(device.id, e.target.value)}
                 placeholder="e.g., Dell Laptop, HP Printer"
                 onBlur={() => setTimeout(() => setSuggestionOpen(prev => ({ ...prev, [device.id]: false })), 150)}
                 autoComplete="off"
+                onKeyDown={(e) => handleEnterNavigation(e, () => {
+                  deviceRefs.current[device.id]?.problem?.focus();
+                })}
               />
               {suggestionOpen[device.id] && (deviceSuggestions_[device.id]?.length ?? 0) > 0 && (
                 <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-48 overflow-auto">
@@ -267,7 +270,48 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
               )}
             </div>
 
-            {/* Lock Checkbox with Password Field */}
+            {/* Problem Description */}
+            <div className="space-y-2">
+              <Label>Problem Description</Label>
+              <Textarea
+                ref={(el) => setDeviceRef(device.id, 'problem', el)}
+                value={device.problem_description}
+                onChange={(e) => updateDevice(device.id, 'problem_description', e.target.value)}
+                placeholder="Describe the issue..."
+                rows={3}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) {
+                    e.preventDefault();
+                    deviceRefs.current[device.id]?.accessories?.focus();
+                  }
+                }}
+              />
+            </div>
+
+            {/* Accessories: Checkbox + Text Input */}
+            <div className="space-y-3 py-3 px-4 bg-muted/50 rounded-lg border border-border/50">
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  id={`accessories-${device.id}`}
+                  checked={device.has_accessories}
+                  onCheckedChange={(checked) => updateDevice(device.id, 'has_accessories', checked === true)}
+                />
+                <Label htmlFor={`accessories-${device.id}`} className="text-sm font-medium cursor-pointer">
+                  Accessories
+                </Label>
+              </div>
+              <Input
+                ref={(el) => setDeviceRef(device.id, 'accessories', el)}
+                value={device.accessories_text}
+                onChange={(e) => updateDevice(device.id, 'accessories_text', e.target.value)}
+                placeholder="e.g., Charger, Bag, Mouse"
+                onKeyDown={(e) => handleEnterNavigation(e, () => {
+                  deviceRefs.current[device.id]?.password?.focus();
+                })}
+              />
+            </div>
+
+            {/* Password Lock: Checkbox + Text Input */}
             <div className="space-y-3 py-3 px-4 bg-muted/50 rounded-lg border border-border/50">
               <div className="flex items-center gap-3">
                 <Checkbox
@@ -276,108 +320,41 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
                   onCheckedChange={(checked) => updateDevice(device.id, 'has_password_lock', checked === true)}
                 />
                 <Label htmlFor={`lock-${device.id}`} className="text-sm font-medium cursor-pointer">
-                  Lock (User Device Password)
+                  Password Lock
                 </Label>
               </div>
-              
-              {device.has_password_lock && (
-                <div className="flex items-center gap-2 ml-7">
-                  <div className="relative flex-1 max-w-xs">
-                    <Input
-                      type={showPasswords[device.id] ? 'text' : 'password'}
-                      value={device.device_password}
-                      onChange={(e) => updateDevice(device.id, 'device_password', e.target.value)}
-                      placeholder="Enter device password"
-                      className="pr-10"
-                    />
-                    <button
-                      type="button"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      onClick={() => togglePasswordVisibility(device.id)}
-                    >
-                      {showPasswords[device.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id={`show-pwd-${device.id}`}
-                      checked={showPasswords[device.id] || false}
-                      onCheckedChange={(checked) => setShowPasswords(prev => ({ ...prev, [device.id]: checked === true }))}
-                    />
-                    <Label htmlFor={`show-pwd-${device.id}`} className="text-xs cursor-pointer whitespace-nowrap">
-                      Show Password
-                    </Label>
-                  </div>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Input
+                    ref={(el) => setDeviceRef(device.id, 'password', el)}
+                    type={showPasswords[device.id] ? 'text' : 'password'}
+                    value={device.device_password}
+                    onChange={(e) => updateDevice(device.id, 'device_password', e.target.value)}
+                    placeholder="Enter device password"
+                    className="pr-10"
+                    onKeyDown={(e) => handleEnterNavigation(e, () => {
+                      focusNextDevice(index);
+                    })}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => togglePasswordVisibility(device.id)}
+                  >
+                    {showPasswords[device.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
-              )}
-            </div>
-
-            {/* Accessories Checkboxes */}
-            <div className="space-y-3 py-3 px-4 bg-muted/50 rounded-lg border border-border/50">
-              <Label className="text-sm font-medium">Accessories</Label>
-              <div className="flex flex-wrap gap-4">
-                {accessoryOptions.map((accessory) => (
-                  <div key={accessory} className="flex items-center gap-2">
-                    <Checkbox
-                      id={`accessory-${device.id}-${accessory}`}
-                      checked={device.accessories.includes(accessory)}
-                      onCheckedChange={(checked) => handleAccessoryToggle(device.id, accessory, checked === true)}
-                    />
-                    <Label 
-                      htmlFor={`accessory-${device.id}-${accessory}`} 
-                      className="text-sm cursor-pointer"
-                    >
-                      {accessory}
-                    </Label>
-                  </div>
-                ))}
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id={`show-pwd-${device.id}`}
+                    checked={showPasswords[device.id] || false}
+                    onCheckedChange={(checked) => setShowPasswords(prev => ({ ...prev, [device.id]: checked === true }))}
+                  />
+                  <Label htmlFor={`show-pwd-${device.id}`} className="text-xs cursor-pointer whitespace-nowrap">
+                    Show
+                  </Label>
+                </div>
               </div>
-              {device.accessories.length > 0 && (
-                <p className="text-xs text-muted-foreground mt-2 pt-2 border-t border-border/50">
-                  Selected: {device.accessories.join(', ')}
-                </p>
-              )}
-            </div>
-
-            {/* Model Number */}
-            <div className="space-y-2">
-              <Label>Model Number</Label>
-              <Input
-                value={device.device_model}
-                onChange={(e) => updateDevice(device.id, 'device_model', e.target.value)}
-                placeholder="e.g., Inspiron 15 3520"
-              />
-            </div>
-
-            {/* Serial Number */}
-            <div className="space-y-2">
-              <Label>Serial Number</Label>
-              <Input
-                value={device.serial_number}
-                onChange={(e) => updateDevice(device.id, 'serial_number', e.target.value)}
-                placeholder="Enter serial number"
-              />
-            </div>
-
-            {/* Problem Description */}
-            <div className="space-y-2">
-              <Label>Problem Description</Label>
-              <Textarea
-                value={device.problem_description}
-                onChange={(e) => updateDevice(device.id, 'problem_description', e.target.value)}
-                placeholder="Describe the issue..."
-                rows={4}
-              />
-            </div>
-
-            {/* Estimated Delivery Date */}
-            <div className="space-y-2 sm:max-w-xs">
-              <Label>Estimated Delivery Date</Label>
-              <Input
-                type="date"
-                value={device.estimated_delivery_date}
-                onChange={(e) => updateDevice(device.id, 'estimated_delivery_date', e.target.value)}
-              />
             </div>
           </CardContent>
         </Card>
