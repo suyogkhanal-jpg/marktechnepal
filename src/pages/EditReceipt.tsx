@@ -5,27 +5,32 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 import { useReceipt, useUpdateReceipt } from '@/hooks/useReceipts';
-import { ArrowLeft, Loader2, Save, User, Laptop, FileText } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { ArrowLeft, Loader2, Save, User, Laptop, FileText, CalendarIcon } from 'lucide-react';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
-  customer_name: z.string().min(1, 'Customer name is required').max(100),
-  customer_phone: z.string().min(1, 'Phone number is required').max(20),
+  customer_name: z.string().optional(),
+  customer_phone: z.string().optional(),
   customer_email: z.string().optional(),
-  device_type: z.string().min(1, 'Device type is required'),
+  device_type: z.string().optional(),
   device_model: z.string().optional(),
   serial_number: z.string().optional(),
   accessories: z.string().optional(),
-  problem_description: z.string().min(1, 'Problem description is required').max(1000),
+  problem_description: z.string().optional(),
   repair_notes: z.string().optional(),
   estimated_delivery_date: z.string().optional(),
   device_password: z.string().optional(),
+  received_date: z.date().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -40,14 +45,13 @@ export default function EditReceipt() {
     register,
     handleSubmit,
     reset,
-    setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
   });
 
-  const deviceType = watch('device_type');
+
 
   useEffect(() => {
     if (receipt) {
@@ -63,6 +67,7 @@ export default function EditReceipt() {
         repair_notes: receipt.repair_notes || '',
         estimated_delivery_date: receipt.estimated_delivery_date || '',
         device_password: receipt.device_password || '',
+        received_date: receipt.received_date ? new Date(receipt.received_date) : undefined,
       });
     }
   }, [receipt, reset]);
@@ -72,17 +77,18 @@ export default function EditReceipt() {
     
     await updateReceipt.mutateAsync({
       id,
-      customer_name: data.customer_name,
-      customer_phone: data.customer_phone,
+      customer_name: data.customer_name || '',
+      customer_phone: data.customer_phone || '',
       customer_email: data.customer_email || null,
-      device_type: data.device_type,
+      device_type: data.device_type || '',
       device_model: data.device_model || null,
       serial_number: data.serial_number || null,
       accessories: data.accessories || null,
-      problem_description: data.problem_description,
+      problem_description: data.problem_description || '',
       repair_notes: data.repair_notes || null,
       estimated_delivery_date: data.estimated_delivery_date || null,
       device_password: data.device_password || null,
+      received_date: data.received_date ? data.received_date.toISOString() : undefined,
     });
     
     navigate(`/receipt/${id}`);
@@ -137,39 +143,67 @@ export default function EditReceipt() {
                 Customer Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="customer_name">Customer Name *</Label>
-                <Input
-                  id="customer_name"
-                  {...register('customer_name')}
-                  placeholder="Enter customer name"
-                  className={errors.customer_name ? 'border-destructive' : ''}
-                />
-                {errors.customer_name && (
-                  <p className="text-xs text-destructive">{errors.customer_name.message}</p>
-                )}
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="customer_name">Customer Name</Label>
+                  <Input
+                    id="customer_name"
+                    {...register('customer_name')}
+                    placeholder="Enter customer name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="customer_phone">Phone Number</Label>
+                  <Input
+                    id="customer_phone"
+                    {...register('customer_phone')}
+                    placeholder="Enter phone number"
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="customer_phone">Phone Number *</Label>
-                <Input
-                  id="customer_phone"
-                  {...register('customer_phone')}
-                  placeholder="Enter phone number"
-                  className={errors.customer_phone ? 'border-destructive' : ''}
-                />
-                {errors.customer_phone && (
-                  <p className="text-xs text-destructive">{errors.customer_phone.message}</p>
-                )}
-              </div>
-              <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="customer_email">Email (optional)</Label>
-                <Input
-                  id="customer_email"
-                  type="email"
-                  {...register('customer_email')}
-                  placeholder="Enter email address"
-                />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="customer_email">Email (optional)</Label>
+                  <Input
+                    id="customer_email"
+                    type="email"
+                    {...register('customer_email')}
+                    placeholder="Enter email address"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Received Date</Label>
+                  <Controller
+                    control={control}
+                    name="received_date"
+                    render={({ field }) => (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                            className="p-3 pointer-events-auto"
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -184,26 +218,12 @@ export default function EditReceipt() {
             </CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-2">
-                <Label htmlFor="device_type">Device Type *</Label>
-                <Select 
-                  value={deviceType} 
-                  onValueChange={(value) => setValue('device_type', value)}
-                >
-                  <SelectTrigger className={errors.device_type ? 'border-destructive' : ''}>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="laptop">Laptop</SelectItem>
-                    <SelectItem value="desktop">Desktop PC</SelectItem>
-                    <SelectItem value="monitor">Monitor</SelectItem>
-                    <SelectItem value="printer">Printer</SelectItem>
-                    <SelectItem value="motherboard">Motherboard</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.device_type && (
-                  <p className="text-xs text-destructive">{errors.device_type.message}</p>
-                )}
+                <Label htmlFor="device_type">Device Type</Label>
+                <Input
+                  id="device_type"
+                  {...register('device_type')}
+                  placeholder="e.g., Dell Laptop, HP Printer"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="device_model">Model</Label>

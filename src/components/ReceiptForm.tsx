@@ -4,10 +4,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import { useCreateReceipt } from '@/hooks/useReceipts';
-import { Loader2, Save, User, Laptop, Eye, EyeOff, Plus, Trash2 } from 'lucide-react';
+import { Loader2, Save, User, Laptop, Eye, EyeOff, Plus, Trash2, CalendarIcon } from 'lucide-react';
 import { CustomerAutocomplete } from '@/components/CustomerAutocomplete';
 import { useRef, useState, KeyboardEvent } from 'react';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface ReceiptFormProps {
   onSuccess?: (receiptId: string) => void;
@@ -62,6 +66,7 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
   const createReceipt = useCreateReceipt();
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
+  const [receivedDate, setReceivedDate] = useState<Date | undefined>(new Date());
   const [devices, setDevices] = useState<DeviceEntry[]>([createEmptyDevice()]);
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -165,6 +170,7 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
           problem_description: device.problem_description || '',
           accessories: device.has_accessories && device.accessories_text ? device.accessories_text : null,
           device_password: device.has_password_lock && device.device_password ? device.device_password : null,
+          received_date: receivedDate ? receivedDate.toISOString() : new Date().toISOString(),
         };
 
         const result = await createReceipt.mutateAsync(submitData);
@@ -172,6 +178,7 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
         if (i === devices.length - 1) {
           setCustomerName('');
           setCustomerPhone('');
+          setReceivedDate(new Date());
           setDevices([createEmptyDevice()]);
           setShowPasswords({});
           onSuccess?.(result.id);
@@ -200,32 +207,60 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
             Customer Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="customer_name">Customer Name</Label>
-            <CustomerAutocomplete
-              value={customerName}
-              onChange={setCustomerName}
-              onSelectCustomer={handleSelectCustomer}
-              placeholder="Enter customer name"
-              onKeyDown={(e) => handleEnterNavigation(e, () => phoneRef.current?.focus())}
-            />
+        <CardContent className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="customer_name">Customer Name</Label>
+              <CustomerAutocomplete
+                value={customerName}
+                onChange={setCustomerName}
+                onSelectCustomer={handleSelectCustomer}
+                placeholder="Enter customer name"
+                onKeyDown={(e) => handleEnterNavigation(e, () => phoneRef.current?.focus())}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="customer_phone">Phone Number</Label>
+              <Input
+                id="customer_phone"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                ref={phoneRef}
+                placeholder="Enter phone number"
+                onKeyDown={(e) => handleEnterNavigation(e, () => {
+                  const firstDevice = devices[0];
+                  if (firstDevice) {
+                    deviceRefs.current[firstDevice.id]?.deviceName?.focus();
+                  }
+                })}
+              />
+            </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="customer_phone">Phone Number</Label>
-            <Input
-              id="customer_phone"
-              value={customerPhone}
-              onChange={(e) => setCustomerPhone(e.target.value)}
-              ref={phoneRef}
-              placeholder="Enter phone number"
-              onKeyDown={(e) => handleEnterNavigation(e, () => {
-                const firstDevice = devices[0];
-                if (firstDevice) {
-                  deviceRefs.current[firstDevice.id]?.deviceName?.focus();
-                }
-              })}
-            />
+            <Label>Received Date</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !receivedDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {receivedDate ? format(receivedDate, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={receivedDate}
+                  onSelect={setReceivedDate}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
           </div>
         </CardContent>
       </Card>
@@ -330,7 +365,7 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
               />
             </div>
 
-            {/* Accessories: Checkbox + Text Input */}
+            {/* Accessories: Checkbox + Text Input (only shows when checked) */}
             <div className="space-y-3 py-3 px-4 bg-muted/50 rounded-lg border border-border/50">
               <div className="flex items-center gap-3">
                 <Checkbox
@@ -342,18 +377,20 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
                   Accessories
                 </Label>
               </div>
-              <Input
-                ref={(el) => setDeviceRef(device.id, 'accessories', el)}
-                value={device.accessories_text}
-                onChange={(e) => updateDevice(device.id, 'accessories_text', e.target.value)}
-                placeholder="e.g., Charger, Bag, Mouse"
-                onKeyDown={(e) => handleEnterNavigation(e, () => {
-                  deviceRefs.current[device.id]?.password?.focus();
-                })}
-              />
+              {device.has_accessories && (
+                <Input
+                  ref={(el) => setDeviceRef(device.id, 'accessories', el)}
+                  value={device.accessories_text}
+                  onChange={(e) => updateDevice(device.id, 'accessories_text', e.target.value)}
+                  placeholder="e.g., Charger, Bag, Mouse"
+                  onKeyDown={(e) => handleEnterNavigation(e, () => {
+                    deviceRefs.current[device.id]?.password?.focus();
+                  })}
+                />
+              )}
             </div>
 
-            {/* Password Lock: Checkbox + Text Input */}
+            {/* Password Lock: Checkbox + Text Input (only shows when checked) */}
             <div className="space-y-3 py-3 px-4 bg-muted/50 rounded-lg border border-border/50">
               <div className="flex items-center gap-3">
                 <Checkbox
@@ -365,38 +402,40 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
                   Password Lock
                 </Label>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1">
-                  <Input
-                    ref={(el) => setDeviceRef(device.id, 'password', el)}
-                    type={showPasswords[device.id] ? 'text' : 'password'}
-                    value={device.device_password}
-                    onChange={(e) => updateDevice(device.id, 'device_password', e.target.value)}
-                    placeholder="Enter device password"
-                    className="pr-10"
-                    onKeyDown={(e) => handleEnterNavigation(e, () => {
-                      focusNextDevice(index);
-                    })}
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    onClick={() => togglePasswordVisibility(device.id)}
-                  >
-                    {showPasswords[device.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
+              {device.has_password_lock && (
                 <div className="flex items-center gap-2">
-                  <Checkbox
-                    id={`show-pwd-${device.id}`}
-                    checked={showPasswords[device.id] || false}
-                    onCheckedChange={(checked) => setShowPasswords(prev => ({ ...prev, [device.id]: checked === true }))}
-                  />
-                  <Label htmlFor={`show-pwd-${device.id}`} className="text-xs cursor-pointer whitespace-nowrap">
-                    Show
-                  </Label>
+                  <div className="relative flex-1">
+                    <Input
+                      ref={(el) => setDeviceRef(device.id, 'password', el)}
+                      type={showPasswords[device.id] ? 'text' : 'password'}
+                      value={device.device_password}
+                      onChange={(e) => updateDevice(device.id, 'device_password', e.target.value)}
+                      placeholder="Enter device password"
+                      className="pr-10"
+                      onKeyDown={(e) => handleEnterNavigation(e, () => {
+                        focusNextDevice(index);
+                      })}
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={() => togglePasswordVisibility(device.id)}
+                    >
+                      {showPasswords[device.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id={`show-pwd-${device.id}`}
+                      checked={showPasswords[device.id] || false}
+                      onCheckedChange={(checked) => setShowPasswords(prev => ({ ...prev, [device.id]: checked === true }))}
+                    />
+                    <Label htmlFor={`show-pwd-${device.id}`} className="text-xs cursor-pointer whitespace-nowrap">
+                      Show
+                    </Label>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </CardContent>
         </Card>
