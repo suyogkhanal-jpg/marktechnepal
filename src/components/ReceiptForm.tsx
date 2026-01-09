@@ -87,10 +87,16 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
     }
   };
 
+  // Ref for submit button
+  const submitRef = useRef<HTMLButtonElement>(null);
+
   const focusNextDevice = (currentIndex: number) => {
     if (currentIndex < devices.length - 1) {
       const nextDevice = devices[currentIndex + 1];
       deviceRefs.current[nextDevice.id]?.deviceName?.focus();
+    } else {
+      // Last device - focus submit button
+      submitRef.current?.focus();
     }
   };
 
@@ -373,7 +379,7 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
               <Plus className="w-4 h-4" />
               Next Device
             </Button>
-            <Button type="submit" size="lg" disabled={isSubmitting}>
+            <Button type="submit" size="lg" disabled={isSubmitting} ref={submitRef}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
