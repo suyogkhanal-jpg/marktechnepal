@@ -37,6 +37,8 @@ const deviceSuggestions = [
 interface DeviceEntry {
   id: string;
   device_type: string;
+  model_number: string;
+  serial_number: string;
   problem_description: string;
   has_accessories: boolean;
   accessories_text: string;
@@ -47,6 +49,8 @@ interface DeviceEntry {
 const createEmptyDevice = (): DeviceEntry => ({
   id: crypto.randomUUID(),
   device_type: '',
+  model_number: '',
+  serial_number: '',
   problem_description: '',
   has_accessories: false,
   accessories_text: '',
@@ -68,14 +72,16 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
   const phoneRef = useRef<HTMLInputElement>(null);
   const deviceRefs = useRef<Record<string, {
     deviceName: HTMLInputElement | null;
+    modelNumber: HTMLInputElement | null;
+    serialNumber: HTMLInputElement | null;
     problem: HTMLTextAreaElement | null;
     accessories: HTMLInputElement | null;
     password: HTMLInputElement | null;
-  }>>({});
+  }>>({})
 
-  const setDeviceRef = (deviceId: string, field: 'deviceName' | 'problem' | 'accessories' | 'password', el: HTMLInputElement | HTMLTextAreaElement | null) => {
+  const setDeviceRef = (deviceId: string, field: 'deviceName' | 'modelNumber' | 'serialNumber' | 'problem' | 'accessories' | 'password', el: HTMLInputElement | HTMLTextAreaElement | null) => {
     if (!deviceRefs.current[deviceId]) {
-      deviceRefs.current[deviceId] = { deviceName: null, problem: null, accessories: null, password: null };
+      deviceRefs.current[deviceId] = { deviceName: null, modelNumber: null, serialNumber: null, problem: null, accessories: null, password: null };
     }
     deviceRefs.current[deviceId][field] = el as any;
   };
@@ -154,6 +160,8 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
           customer_name: customerName || '',
           customer_phone: customerPhone || '',
           device_type: device.device_type || '',
+          device_model: device.model_number || null,
+          serial_number: device.serial_number || null,
           problem_description: device.problem_description || '',
           accessories: device.has_accessories && device.accessories_text ? device.accessories_text : null,
           device_password: device.has_password_lock && device.device_password ? device.device_password : null,
@@ -257,7 +265,7 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
                 onBlur={() => setTimeout(() => setSuggestionOpen(prev => ({ ...prev, [device.id]: false })), 150)}
                 autoComplete="off"
                 onKeyDown={(e) => handleEnterNavigation(e, () => {
-                  deviceRefs.current[device.id]?.problem?.focus();
+                  deviceRefs.current[device.id]?.modelNumber?.focus();
                 })}
               />
               {suggestionOpen[device.id] && (deviceSuggestions_[device.id]?.length ?? 0) > 0 && (
@@ -274,6 +282,34 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Model Number & Serial Number */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Model Number</Label>
+                <Input
+                  ref={(el) => setDeviceRef(device.id, 'modelNumber', el)}
+                  value={device.model_number}
+                  onChange={(e) => updateDevice(device.id, 'model_number', e.target.value)}
+                  placeholder="Enter model number"
+                  onKeyDown={(e) => handleEnterNavigation(e, () => {
+                    deviceRefs.current[device.id]?.serialNumber?.focus();
+                  })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Serial Number</Label>
+                <Input
+                  ref={(el) => setDeviceRef(device.id, 'serialNumber', el)}
+                  value={device.serial_number}
+                  onChange={(e) => updateDevice(device.id, 'serial_number', e.target.value)}
+                  placeholder="Enter serial number"
+                  onKeyDown={(e) => handleEnterNavigation(e, () => {
+                    deviceRefs.current[device.id]?.problem?.focus();
+                  })}
+                />
+              </div>
             </div>
 
             {/* Problem Description */}
