@@ -45,6 +45,25 @@ export function useReceipt(id: string | undefined) {
   });
 }
 
+// Fetch all receipts for the same customer (by phone) on the same date
+export function useCustomerReceipts(customerPhone: string | undefined, receivedDate: string | undefined) {
+  return useQuery({
+    queryKey: ['customer-receipts', customerPhone, receivedDate],
+    queryFn: async () => {
+      if (!customerPhone || !receivedDate) return [];
+      const { data, error } = await supabase
+        .from('receipts')
+        .select('*')
+        .eq('customer_phone', customerPhone)
+        .eq('received_date', receivedDate)
+        .order('receipt_number', { ascending: true });
+      if (error) throw error;
+      return data as Receipt[];
+    },
+    enabled: !!customerPhone && !!receivedDate,
+  });
+}
+
 export function useCreateReceipt() {
   const queryClient = useQueryClient();
 

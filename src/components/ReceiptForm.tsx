@@ -246,6 +246,13 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
                     "w-full justify-start text-left font-normal",
                     !receivedDate && "text-muted-foreground"
                   )}
+                  onKeyDown={(e) => {
+                    // Disable Enter key navigation on date field - only allow date picker selection
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }
+                  }}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {receivedDate ? format(receivedDate, "PPP") : <span>Pick a date</span>}
