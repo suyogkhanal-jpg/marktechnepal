@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { useReceipt } from '@/hooks/useReceipts';
+import { useReceipt, useCustomerReceipts } from '@/hooks/useReceipts';
 import { PrintReceipt } from '@/components/PrintReceipt';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -7,11 +7,20 @@ import { ArrowLeft, Printer } from 'lucide-react';
 
 export default function PrintReceiptPage() {
   const { id } = useParams<{ id: string }>();
-  const { data: receipt, isLoading } = useReceipt(id);
+  const { data: receipt, isLoading: receiptLoading } = useReceipt(id);
+  
+  // Fetch all receipts for the same customer on the same date
+  const { data: customerReceipts, isLoading: customerReceiptsLoading } = useCustomerReceipts(
+    receipt?.customer_phone,
+    receipt?.received_date
+  );
 
   const handlePrint = () => {
     window.print();
   };
+
+  const isLoading = receiptLoading || customerReceiptsLoading;
+  const receiptsToShow = customerReceipts && customerReceipts.length > 0 ? customerReceipts : (receipt ? [receipt] : []);
 
   if (isLoading) {
     return (
@@ -45,16 +54,21 @@ export default function PrintReceiptPage() {
               Back to Receipt
             </Link>
           </Button>
-          <Button onClick={handlePrint}>
-            <Printer className="w-4 h-4 mr-2" />
-            Print Receipt
-          </Button>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-muted-foreground">
+              {receiptsToShow.length} device(s) for this customer
+            </span>
+            <Button onClick={handlePrint}>
+              <Printer className="w-4 h-4 mr-2" />
+              Print Receipt
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Print Preview */}
       <div className="p-6">
-        <PrintReceipt receipt={receipt} />
+        <PrintReceipt receipts={receiptsToShow} />
       </div>
     </div>
   );
