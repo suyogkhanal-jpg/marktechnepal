@@ -23,21 +23,16 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
     <div className="receipt-print max-w-4xl mx-auto bg-white text-black p-8 print:p-6 font-sans">
       {/* Header Section */}
       <div className="flex justify-between items-start mb-4">
-        {/* Left Side - Logo */}
-        <div className="flex-shrink-0">
-          <div className="w-16 h-12 bg-purple-800 rounded flex items-center justify-center text-white text-xs font-bold leading-tight px-1">
-            <span className="text-center">MarkTech<br/>Nepal</span>
-          </div>
+        {/* Left Side - Receipt No. */}
+        <div className="flex-shrink-0 text-left">
+          <span className="text-sm">Receipt No.</span>
+          <div className="text-3xl font-bold">{receiptNumberDisplay}</div>
         </div>
         
         {/* Center - Title */}
         <div className="flex-1 text-center">
-          <h1 className="text-3xl font-bold tracking-wide">MARKTECH NEPAL</h1>
-          <h2 className="text-lg font-medium underline mb-2">MAINTENANCE RECEIPT</h2>
-          <div>
-            <span className="text-base">Receipt No.</span>
-            <span className="text-4xl font-bold ml-3">{receiptNumberDisplay}</span>
-          </div>
+          <h1 className="text-4xl font-bold tracking-wide" style={{ fontFamily: 'serif' }}>MarkTech Nepal</h1>
+          <h2 className="text-base font-medium underline mt-1">MAINTENANCE RECEIPT</h2>
         </div>
         
         {/* Right Side - Contact Info */}
