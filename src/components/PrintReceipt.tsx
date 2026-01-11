@@ -109,8 +109,8 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
             </tr>
           ))}
           {/* Empty rows to ensure minimum table height */}
-          {receipts.length < 5 && Array.from({ length: Math.max(5 - receipts.length, 3) }).map((_, i) => (
-            <tr key={`empty-${i}`} style={{ height: '60px' }}>
+          {receipts.length < 3 && Array.from({ length: 3 - receipts.length }).map((_, i) => (
+            <tr key={`empty-${i}`} style={{ height: '50px' }}>
               <td className="border border-black p-3">&nbsp;</td>
               <td className="border border-black p-3">&nbsp;</td>
               <td className="border border-black p-3">&nbsp;</td>
@@ -121,25 +121,24 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
         </tbody>
       </table>
 
-      {/* Terms & Conditions */}
-      <div className="mb-3 text-sm leading-relaxed text-center">
-        <p>
-          मर्मतका लागि छाडिएको सामान 2 महिनासम्म लिन नआएमा हराए वा बिग्रिएमा त्यसको
-        </p>
-        <p>जिम्मेवाही कम्पनीले लिने छैन।</p>
-      </div>
-
-      {/* VAT Notice */}
-      <div className="mb-6 text-center">
-        <p className="text-lg font-bold">मर्मत खर्चमा अतिरिक्त मूल्य अभिवृद्धि कर (VAT) लाग्नेछ।</p>
-      </div>
-
       {/* Signature Section */}
       <div className="flex justify-center mb-4">
         <div className="text-center">
           <div className="w-48 border-b border-dotted border-black mb-1"></div>
           <span className="text-base">For : MKTN</span>
         </div>
+      </div>
+
+      {/* Terms & Conditions */}
+      <div className="mb-2 text-sm leading-relaxed text-center">
+        <p>
+          मर्मतका लागि छाडिएको सामान 2 महिनासम्म लिन नआएमा हराए वा बिग्रिएमा त्यसको जिम्मेवाही कम्पनीले लिने छैन।
+        </p>
+      </div>
+
+      {/* VAT Notice */}
+      <div className="mb-4 text-center">
+        <p className="text-lg font-bold">मर्मत खर्चमा अतिरिक्त मूल्य अभिवृद्धि कर (VAT) लाग्नेछ।</p>
       </div>
 
       {/* Footer */}

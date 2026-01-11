@@ -199,8 +199,8 @@
 
 @media print {
   @page {
-    size: B4;
-    margin: 15mm;
+    size: A5;
+    margin: 10mm;
   }
 
   body {
