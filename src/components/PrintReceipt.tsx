@@ -1,5 +1,6 @@
 import { Receipt } from '@/types/receipt';
 import { Globe, Mail, Facebook } from 'lucide-react';
+import marktechLogo from '@/assets/marktech-logo.webp';
 
 interface PrintReceiptProps {
   receipts: Receipt[];
@@ -23,16 +24,18 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
     <div className="receipt-print max-w-4xl mx-auto bg-white text-black p-8 print:p-6 font-sans">
       {/* Header Section */}
       <div className="flex justify-between items-start mb-4">
-        {/* Left Side - Receipt No. */}
-        <div className="flex-shrink-0 text-left">
-          <span className="text-sm">Receipt No.</span>
-          <div className="text-3xl font-bold">{receiptNumberDisplay}</div>
+        {/* Left Side - Logo */}
+        <div className="flex-shrink-0">
+          <img src={marktechLogo} alt="MarkTech Nepal" className="w-20 h-auto" />
         </div>
         
-        {/* Center - Title */}
+        {/* Center - Receipt No. and Title */}
         <div className="flex-1 text-center">
-          <h1 className="text-4xl font-bold tracking-wide" style={{ fontFamily: 'serif' }}>MarkTech Nepal</h1>
-          <h2 className="text-base font-medium underline mt-1">MAINTENANCE RECEIPT</h2>
+          <div className="mb-1">
+            <span className="text-sm">Receipt No.</span>
+            <span className="text-3xl font-bold ml-2">{receiptNumberDisplay}</span>
+          </div>
+          <h2 className="text-base font-medium underline">MAINTENANCE RECEIPT</h2>
         </div>
         
         {/* Right Side - Contact Info */}
@@ -67,14 +70,16 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
       {/* Customer Info Section */}
       <div className="mb-6 text-base">
         <div className="flex items-baseline mb-3">
-          <span className="font-medium">Customer Name:</span>
+          <span className="font-medium w-32">Customer Name:</span>
           <span className="flex-1 border-b border-dotted border-black ml-2 pb-1">{primaryReceipt.customer_name}</span>
         </div>
         <div className="flex items-baseline">
-          <span className="font-medium">Contact:</span>
+          <span className="font-medium w-32">Contact:</span>
           <span className="flex-1 border-b border-dotted border-black ml-2 pb-1">{primaryReceipt.customer_phone}</span>
-          <span className="font-medium ml-4">PW:</span>
-          <span className="w-32 border-b border-dotted border-black ml-2 pb-1">{firstPassword}</span>
+        </div>
+        <div className="flex items-baseline mt-3">
+          <span className="font-medium w-32">PW:</span>
+          <span className="flex-1 border-b border-dotted border-black ml-2 pb-1">{firstPassword}</span>
         </div>
       </div>
 
