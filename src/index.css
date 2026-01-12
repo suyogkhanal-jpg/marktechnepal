@@ -199,7 +199,7 @@
 
 @media print {
   @page {
-    size: A5;
+    size: B5 portrait;
     margin: 10mm;
   }
 
