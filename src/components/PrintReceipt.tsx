@@ -21,39 +21,25 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
   const firstPassword = primaryReceipt.device_password || '';
   
   return (
-    <div className="receipt-print max-w-4xl mx-auto bg-white text-black p-8 print:p-6 font-sans">
-      {/* Header Section - Business Name at Top, Centered */}
-      <div className="text-center mb-2">
-        <h1 className="text-4xl font-bold tracking-wide" style={{ fontFamily: 'serif' }}>MARKTECH NEPAL</h1>
-      </div>
-
-      {/* Logo Below Header Name, Centered */}
-      <div className="flex justify-center mb-2">
-        <img src={marktechLogo} alt="MarkTech Nepal" className="w-24 h-auto" />
-      </div>
-
-      {/* Receipt Number Below Logo, Centered */}
-      <div className="text-center mb-3">
-        <span className="text-sm">Receipt No:</span>
-        <span className="text-2xl font-bold ml-2">{receiptNumberDisplay}</span>
-      </div>
-
-      {/* Contact Info Row */}
-      <div className="flex justify-between items-start mb-4 border-b border-gray-300 pb-3">
-        {/* Left Side - Address */}
-        <div className="text-sm leading-relaxed">
-          <p className="font-medium">22, Tadhahiti Galli, New Road</p>
+    <div className="receipt-print max-w-4xl mx-auto bg-white text-black p-6 print:p-4 font-sans">
+      {/* Header Section */}
+      <div className="flex items-start gap-3 mb-1">
+        {/* Logo */}
+        <div className="flex-shrink-0">
+          <img src={marktechLogo} alt="MarkTech Nepal" className="w-16 h-auto" />
+        </div>
+        
+        {/* Title and Subtitle */}
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold tracking-wide" style={{ fontFamily: 'serif' }}>MARKTECH NEPAL</h1>
+          <h2 className="text-base font-medium underline mt-1">MAINTENANCE RECEIPT</h2>
+        </div>
+        
+        {/* Right Side - Contact Info */}
+        <div className="text-right text-sm leading-relaxed flex-shrink-0">
+          <p>22, Tadhahiti Galli, New Road</p>
           <p>Kathmandu, Nepal</p>
-          <p className="mt-1">Tel: +977-1-5320125</p>
-        </div>
-        
-        {/* Center - Subtitle */}
-        <div className="text-center">
-          <h2 className="text-base font-medium underline">MAINTENANCE RECEIPT</h2>
-        </div>
-        
-        {/* Right Side - Social & Web */}
-        <div className="text-right text-sm leading-relaxed">
+          <p>Tel: +977-1-5320125,</p>
           <div className="flex items-center justify-end gap-1">
             {/* WhatsApp icon */}
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -78,81 +64,99 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
         </div>
       </div>
 
+      {/* Receipt Number */}
+      <div className="mb-3">
+        <span className="text-base">Receipt No.</span>
+        <span className="text-2xl font-bold ml-3">{receiptNumberDisplay}</span>
+      </div>
+
       {/* Customer Info Section */}
-      <div className="mb-6 text-base">
-        <div className="flex items-baseline mb-3">
-          <span className="font-medium w-32">Customer Name:</span>
-          <span className="flex-1 border-b border-dotted border-black ml-2 pb-1">{primaryReceipt.customer_name}</span>
+      <div className="mb-4 text-base">
+        <div className="flex items-baseline mb-2">
+          <span className="font-medium">Customer Name:</span>
+          <span className="flex-1 border-b border-dotted border-black ml-2 min-h-[1.5rem]">{primaryReceipt.customer_name}</span>
         </div>
         <div className="flex items-baseline">
-          <span className="font-medium w-32">Contact:</span>
-          <span className="flex-1 border-b border-dotted border-black ml-2 pb-1">{primaryReceipt.customer_phone}</span>
-        </div>
-        <div className="flex items-baseline mt-3">
-          <span className="font-medium w-32">PW:</span>
-          <span className="flex-1 border-b border-dotted border-black ml-2 pb-1">{firstPassword}</span>
+          <span className="font-medium">Contact:</span>
+          <span className="flex-1 border-b border-dotted border-black ml-2 min-h-[1.5rem]">{primaryReceipt.customer_phone}</span>
+          <span className="font-medium ml-4">PW:</span>
+          <span className="w-32 border-b border-dotted border-black ml-2 min-h-[1.5rem]">{firstPassword}</span>
         </div>
       </div>
 
       {/* Devices Table */}
-      <table className="w-full border-collapse border border-black mb-6 text-sm">
+      <table className="w-full border-collapse border border-black mb-4 text-sm">
         <thead>
           <tr className="bg-white">
-            <th className="border border-black p-3 text-left w-12 font-semibold">S.N</th>
-            <th className="border border-black p-3 text-left font-semibold">Particulars</th>
-            <th className="border border-black p-3 text-left font-semibold">Problem</th>
-            <th className="border border-black p-3 text-left w-28 font-semibold">Model NO.</th>
-            <th className="border border-black p-3 text-left w-28 font-semibold">Serial No.</th>
+            <th className="border border-black p-2 text-left w-10 font-semibold">S.N</th>
+            <th className="border border-black p-2 text-left font-semibold">Particulars</th>
+            <th className="border border-black p-2 text-left font-semibold">Problem</th>
+            <th className="border border-black p-2 text-left w-24 font-semibold">Model NO.</th>
+            <th className="border border-black p-2 text-left w-24 font-semibold">Serial No.</th>
           </tr>
         </thead>
         <tbody>
           {receipts.map((receipt, index) => (
-            <tr key={receipt.id}>
-              <td className="border border-black p-3 align-top">
+            <tr key={receipt.id} style={{ minHeight: '200px' }}>
+              <td className="border border-black p-2 align-top">
                 {index + 1}
               </td>
-              <td className="border border-black p-3 align-top">
+              <td className="border border-black p-2 align-top">
                 <span className="capitalize">{receipt.device_type}</span>
                 {receipt.accessories && <span className="text-sm block text-gray-600">({receipt.accessories})</span>}
               </td>
-              <td className="border border-black p-3 align-top">
+              <td className="border border-black p-2 align-top">
                 {receipt.problem_description}
               </td>
-              <td className="border border-black p-3 align-top">
+              <td className="border border-black p-2 align-top">
                 {receipt.device_model || ''}
               </td>
-              <td className="border border-black p-3 align-top">
+              <td className="border border-black p-2 align-top">
                 {receipt.serial_number || ''}
               </td>
+            </tr>
+          ))}
+          {/* Add empty rows to fill space */}
+          {receipts.length < 5 && Array.from({ length: 5 - receipts.length }).map((_, i) => (
+            <tr key={`empty-${i}`} style={{ height: '40px' }}>
+              <td className="border border-black p-2"></td>
+              <td className="border border-black p-2"></td>
+              <td className="border border-black p-2"></td>
+              <td className="border border-black p-2"></td>
+              <td className="border border-black p-2"></td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Signature Section - More space for signing */}
-      <div className="flex justify-center mb-2 mt-6">
+      {/* Terms & Conditions */}
+      <div className="mb-2 text-sm leading-relaxed text-center">
+        <p>
+          मर्मतका लागि छाडिएको सामान 2 महिनासम्म लिन नआएमा हराए वा बिग्रिएमा त्यसको
+        </p>
+        <p>जिम्मेवाही कम्पनीले लिने छैन।</p>
+      </div>
+
+      {/* VAT Notice */}
+      <div className="mb-3 text-center">
+        <p className="text-lg font-bold">मर्मत खर्चमा अतिरिक्त मूल्य अभिवृद्धि कर (VAT) लाग्नेछ।</p>
+      </div>
+
+      {/* Signature Section */}
+      <div className="flex justify-center mb-3">
         <div className="text-center">
-          <div className="w-48 border-b border-dotted border-black mb-1 mt-8"></div>
+          <div className="w-48 border-b border-dotted border-black mb-1"></div>
           <span className="text-base">For : MKTN</span>
         </div>
       </div>
 
-      {/* Terms & Conditions */}
-      <div className="mb-2 text-sm leading-relaxed text-center">
-        <p>
-          मर्मतका लागि छाडिएको सामान 2 महिनासम्म लिन नआएमा हराए वा बिग्रिएमा त्यसको जिम्मेवाही कम्पनीले लिने छैन।
-        </p>
-      </div>
-
-      {/* VAT Notice */}
-      <div className="mb-4 text-center">
-        <p className="text-lg font-bold">मर्मत खर्चमा अतिरिक्त मूल्य अभिवृद्धि कर (VAT) लाग्नेछ।</p>
-      </div>
-
       {/* Footer */}
-      <div className="text-center mt-6">
+      <div className="text-center">
+        <p className="text-sm mb-2">
+          Laptop, Desktop, Projector, Printer and all kinds of computer
+        </p>
         <p className="text-sm mb-3">
-          Laptop, Desktop, Projector, Printer and all kinds of computer Accesories maintenance and sales
+          Accesories maintenance and sales
         </p>
         <p className="text-xl font-bold">
           Please Return this Slip
