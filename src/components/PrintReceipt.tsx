@@ -23,27 +23,27 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
   return (
     <div className="receipt-print bg-white text-black font-sans" style={{ fontFamily: 'Arial, sans-serif' }}>
       {/* Header Section - Centered */}
-      <div className="text-center mb-2">
-        <h1 className="text-2xl font-bold tracking-wide mb-1" style={{ fontSize: '24px', letterSpacing: '2px' }}>
+      <div className="text-center mb-3">
+        <h1 className="font-bold tracking-wide mb-1" style={{ fontSize: '28px', letterSpacing: '2px' }}>
           MARKTECH NEPAL
         </h1>
-        <h2 className="text-base font-bold" style={{ fontSize: '14px' }}>
+        <h2 className="font-bold" style={{ fontSize: '18px' }}>
           Maintenance Receipt
         </h2>
       </div>
 
       {/* Logo Below Header - Centered */}
-      <div className="flex justify-center mb-2">
-        <img src={marktechLogo} alt="MarkTech Nepal" className="h-12 w-auto" />
+      <div className="flex justify-center mb-3">
+        <img src={marktechLogo} alt="MarkTech Nepal" className="h-14 w-auto" />
       </div>
 
       {/* Contact Info Row */}
-      <div className="flex justify-between items-start text-xs mb-3" style={{ fontSize: '10px' }}>
-        <div className="leading-tight">
+      <div className="flex justify-between items-start mb-4" style={{ fontSize: '11px' }}>
+        <div className="leading-relaxed">
           <p>22, Tadhahiti Galli, New Road</p>
           <p>Kathmandu, Nepal</p>
         </div>
-        <div className="text-right leading-tight">
+        <div className="text-right leading-relaxed">
           <p>Tel: +977-1-5320125</p>
           <div className="flex items-center justify-end gap-1">
             <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
@@ -52,122 +52,115 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
             <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
               <path d="M11.398.002C9.473.028 5.331.344 3.014 2.467 1.294 4.182.64 6.727.512 9.9c-.128 3.172-.297 9.122 5.594 10.834v2.48s-.038.999.621 1.203c.795.246 1.263-.512 2.024-1.329.418-.449.992-1.108 1.428-1.613 3.94.333 6.969-.426 7.313-.537.793-.255 5.282-.833 6.012-6.793.752-6.15-.355-10.034-2.329-11.796 0 0 .262.186-1.473-1.323C17.701.472 14.788-.041 11.398.002zm.248 1.995c3.027-.038 5.573.394 7.149 1.895l-.001-.001c1.418 1.237 1.89 3.014 1.825 5.996-.07 3.267-.47 5.295-1.803 6.636-.813.753-2.024 1.263-3.639 1.549-.696.123-2.417.384-5.463.193 0 0-2.174 2.632-2.853 3.316-.109.11-.251.155-.341.135-.128-.029-.163-.17-.162-.375 0-.135.012-3.348.012-3.348-.006 0-.001.001 0 0-5.174-1.445-4.868-6.872-4.765-9.283.109-2.556.625-4.526 1.911-5.778 1.689-1.538 5.102-2.893 8.13-2.935zm.066 1.83c-.242.004-.484.02-.726.048-.15.018-.272.151-.262.302.01.15.143.266.294.256.84-.075 1.69-.003 2.513.204.822.207 1.598.557 2.3 1.015.698.458 1.306 1.018 1.805 1.662a6.46 6.46 0 011.107 2.184c.063.208.127.467.177.718.02.099.032.199.047.299.009.055.013.111.021.166.015.099.022.199.033.299.045.401.057.808.038 1.212-.003.076.02.15.063.209a.28.28 0 00.179.113c.153.029.305-.073.339-.227a7.15 7.15 0 00-.009-2.161 7.323 7.323 0 00-.476-1.626 7.438 7.438 0 00-1.263-1.987 7.414 7.414 0 00-2.05-1.604 7.395 7.395 0 00-2.575-.918 7.235 7.235 0 00-1.555-.164zm-2.645.973c-.175.011-.4.06-.677.16-.441.159-.99.556-1.276.923-.36.458-.569 1.006-.611 1.551-.041.529.044.986.198 1.404.326.94.85 1.844 1.433 2.728.582.883 1.227 1.754 1.965 2.572a14.24 14.24 0 003.48 2.925 10.4 10.4 0 002.424 1.14c.457.145.943.24 1.465.216.522-.024 1.078-.178 1.541-.479.478-.311.816-.748 1.012-1.186.126-.28.195-.558.213-.816.018-.257-.019-.496-.127-.688-.181-.32-.51-.535-.852-.701l-1.357-.62-.834-.381c-.291-.135-.604-.186-.9-.066-.243.099-.44.292-.608.504-.17.213-.317.45-.518.608-.055.043-.149.086-.299.084-.306-.006-.763-.133-1.308-.401a6.27 6.27 0 01-1.527-1.047 8.298 8.298 0 01-1.137-1.31c-.32-.45-.555-.88-.68-1.207-.06-.162-.088-.296-.089-.4-.001-.092.016-.139.056-.185.15-.164.364-.33.553-.52.19-.189.367-.4.458-.657.104-.292.078-.627-.04-.929l-.345-.891-.593-1.521c-.16-.372-.447-.597-.701-.697a1.233 1.233 0 00-.516-.09zm2.5.808a.273.273 0 00-.068.008c-.15.036-.246.186-.218.336.18.932.59 1.8 1.186 2.529a5.42 5.42 0 002.17 1.647c.141.061.304-.002.372-.14a.282.282 0 00-.129-.375 4.853 4.853 0 01-1.95-1.476 4.867 4.867 0 01-1.054-2.262.28.28 0 00-.31-.267zm.19 1.756c-.15.026-.256.164-.24.316.065.644.31 1.26.71 1.773.403.517.958.92 1.592 1.161.146.055.311-.018.375-.162a.286.286 0 00-.156-.378 2.92 2.92 0 01-1.294-.944 2.96 2.96 0 01-.577-1.439c-.022-.15-.157-.257-.305-.243-.017.001-.035.003-.052.006-.018.003-.035.006-.053.01z"/>
             </svg>
-            <Facebook size={10} />
+            <Facebook size={11} />
             <span>: 9766889852</span>
           </div>
           <div className="flex items-center justify-end gap-1">
-            <Globe size={10} />
+            <Globe size={11} />
             <span>marktechnepal.com</span>
           </div>
           <div className="flex items-center justify-end gap-1">
-            <Mail size={10} />
+            <Mail size={11} />
             <span>info@marktechnepal.com</span>
           </div>
         </div>
       </div>
 
       {/* Receipt Number - Left aligned */}
-      <div className="mb-2">
-        <span className="text-sm">Receipt No.</span>
-        <span className="text-lg font-bold ml-2" style={{ fontSize: '16px' }}>{receiptNumberDisplay}</span>
+      <div className="mb-3">
+        <span style={{ fontSize: '13px' }}>Receipt No.</span>
+        <span className="font-bold ml-2" style={{ fontSize: '18px' }}>{receiptNumberDisplay}</span>
       </div>
 
       {/* Customer Info Section */}
-      <div className="mb-3 text-sm" style={{ fontSize: '11px' }}>
-        <div className="flex items-baseline mb-1">
-          <span className="font-medium" style={{ minWidth: '90px' }}>Customer Name:</span>
+      <div className="mb-4" style={{ fontSize: '13px' }}>
+        <div className="flex items-baseline mb-2">
+          <span className="font-medium" style={{ minWidth: '110px' }}>Customer Name:</span>
           <span className="flex-1 border-b border-dotted border-black ml-1 pb-0.5">{primaryReceipt.customer_name}</span>
         </div>
         <div className="flex items-baseline">
-          <span className="font-medium" style={{ minWidth: '50px' }}>Contact:</span>
+          <span className="font-medium" style={{ minWidth: '60px' }}>Contact:</span>
           <span className="flex-1 border-b border-dotted border-black ml-1 pb-0.5">{primaryReceipt.customer_phone}</span>
-          <span className="font-medium ml-3" style={{ minWidth: '30px' }}>PW:</span>
-          <span className="w-24 border-b border-dotted border-black ml-1 pb-0.5">{firstPassword}</span>
+          <span className="font-medium ml-4" style={{ minWidth: '35px' }}>PW:</span>
+          <span className="w-28 border-b border-dotted border-black ml-1 pb-0.5">{firstPassword}</span>
         </div>
       </div>
 
       {/* Devices Table */}
-      <table className="w-full border-collapse border border-black mb-3" style={{ fontSize: '10px' }}>
+      <table className="w-full border-collapse border border-black mb-4" style={{ fontSize: '12px' }}>
         <thead>
           <tr className="bg-white">
-            <th className="border border-black p-1 text-left font-semibold" style={{ width: '25px' }}>S.N</th>
-            <th className="border border-black p-1 text-left font-semibold">Particulars</th>
-            <th className="border border-black p-1 text-left font-semibold">Problem</th>
-            <th className="border border-black p-1 text-left font-semibold" style={{ width: '70px' }}>Model NO.</th>
-            <th className="border border-black p-1 text-left font-semibold" style={{ width: '70px' }}>Serial No.</th>
+            <th className="border border-black p-1.5 text-left font-semibold" style={{ width: '30px' }}>S.N</th>
+            <th className="border border-black p-1.5 text-left font-semibold">Particulars</th>
+            <th className="border border-black p-1.5 text-left font-semibold">Problem</th>
+            <th className="border border-black p-1.5 text-left font-semibold" style={{ width: '80px' }}>Model NO.</th>
+            <th className="border border-black p-1.5 text-left font-semibold" style={{ width: '80px' }}>Serial No.</th>
           </tr>
         </thead>
         <tbody>
           {receipts.map((receipt, index) => (
             <tr key={receipt.id}>
-              <td className="border border-black p-1 align-top">
+              <td className="border border-black p-1.5 align-top">
                 {index + 1}
               </td>
-              <td className="border border-black p-1 align-top">
+              <td className="border border-black p-1.5 align-top">
                 <span className="capitalize">{receipt.device_type}</span>
                 {receipt.accessories && <span className="block text-gray-600">({receipt.accessories})</span>}
               </td>
-              <td className="border border-black p-1 align-top">
+              <td className="border border-black p-1.5 align-top">
                 {receipt.problem_description}
               </td>
-              <td className="border border-black p-1 align-top">
+              <td className="border border-black p-1.5 align-top">
                 {receipt.device_model || ''}
               </td>
-              <td className="border border-black p-1 align-top">
+              <td className="border border-black p-1.5 align-top">
                 {receipt.serial_number || ''}
               </td>
             </tr>
           ))}
-          {/* Add empty rows to fill space - reduced to 4 */}
+          {/* Add empty rows to fill space */}
           {receipts.length < 4 && Array.from({ length: 4 - receipts.length }).map((_, i) => (
-            <tr key={`empty-${i}`} style={{ height: '28px' }}>
-              <td className="border border-black p-1"></td>
-              <td className="border border-black p-1"></td>
-              <td className="border border-black p-1"></td>
-              <td className="border border-black p-1"></td>
-              <td className="border border-black p-1"></td>
+            <tr key={`empty-${i}`} style={{ height: '32px' }}>
+              <td className="border border-black p-1.5"></td>
+              <td className="border border-black p-1.5"></td>
+              <td className="border border-black p-1.5"></td>
+              <td className="border border-black p-1.5"></td>
+              <td className="border border-black p-1.5"></td>
             </tr>
           ))}
         </tbody>
       </table>
 
       {/* Terms & Conditions - Centered */}
-      <div className="text-center mb-1" style={{ fontSize: '10px' }}>
+      <div className="text-center mb-2" style={{ fontSize: '12px' }}>
         <p>मर्मतका लागि छाडिएको सामान 2 महिनासम्म लिन नआएमा हराए वा बिग्रिएमा त्यसको</p>
         <p>जिम्मेवाही कम्पनीले लिने छैन।</p>
       </div>
 
       {/* VAT Notice - Centered */}
-      <div className="text-center mb-4" style={{ fontSize: '12px' }}>
+      <div className="text-center mb-6" style={{ fontSize: '14px' }}>
         <p className="font-bold">मर्मत खर्चमा अतिरिक्त मूल्य अभिवृद्धि कर (VAT) लाग्नेछ।</p>
       </div>
 
-      {/* Signature Section - Mandatory, visually separated */}
-      <div className="border-t border-gray-300 pt-4 mt-4">
-        <div className="flex justify-between items-end px-4">
-          {/* Customer Signature */}
+      {/* Signature Section - Mandatory, visually separated, only Authorized Signature */}
+      <div className="border-t border-gray-400 pt-6 mt-6">
+        <div className="flex justify-center">
           <div className="text-center">
-            <div className="w-40 border-b border-black mb-1" style={{ height: '40px' }}></div>
-            <span className="text-xs font-medium" style={{ fontSize: '10px' }}>Customer Signature</span>
-          </div>
-          
-          {/* Authorized Signature */}
-          <div className="text-center">
-            <div className="w-40 border-b border-black mb-1" style={{ height: '40px' }}></div>
-            <span className="text-xs font-medium" style={{ fontSize: '10px' }}>For : MKTN</span>
+            <div className="w-48 border-b border-black mb-2" style={{ height: '50px' }}></div>
+            <span className="font-medium" style={{ fontSize: '13px' }}>Authorized Signature (MKTN)</span>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="text-center mt-4" style={{ fontSize: '9px' }}>
-        <p className="mb-0.5">
+      <div className="text-center mt-6" style={{ fontSize: '11px' }}>
+        <p className="mb-1">
           Laptop, Desktop, Projector, Printer and all kinds of computer
         </p>
-        <p className="mb-1">
+        <p className="mb-2">
           Accessories maintenance and sales
         </p>
-        <p className="text-sm font-bold" style={{ fontSize: '14px' }}>
+        <p className="font-bold" style={{ fontSize: '16px' }}>
           Please Return this Slip
         </p>
       </div>
