@@ -1,6 +1,6 @@
 import { Receipt } from '@/types/receipt';
 import { Globe, Mail, Facebook } from 'lucide-react';
-import marktechLogo from '@/assets/marktech-logo.webp';
+import marktechLogo from '@/assets/marktech-logo-black.png';
 import { formatNepaliDate } from '@/utils/nepaliDate';
 
 interface PrintReceiptProps {
