@@ -2,7 +2,7 @@ import { Receipt } from '@/types/receipt';
 import { StatusBadge } from './StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Eye, Printer, Pencil } from 'lucide-react';
-import { format } from 'date-fns';
+import { formatNepaliDate } from '@/utils/nepaliDate';
 import { Link } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -75,7 +75,7 @@ export function ReceiptList({ receipts, isLoading }: ReceiptListProps) {
                 {receipt.device_type} {receipt.device_model && `- ${receipt.device_model}`}
               </TableCell>
               <TableCell className="text-muted-foreground">
-                {format(new Date(receipt.received_date), 'MMM d, yyyy')}
+                {formatNepaliDate(receipt.received_date)}
               </TableCell>
               <TableCell>
                 <StatusBadge status={receipt.status} />
