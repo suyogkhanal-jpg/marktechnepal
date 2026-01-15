@@ -9,7 +9,7 @@ interface SearchBarProps {
   placeholder?: string;
 }
 
-export function SearchBar({ value, onChange, placeholder = 'Search by receipt # or phone...' }: SearchBarProps) {
+export function SearchBar({ value, onChange, placeholder = 'Search by receipt # (e.g., 0001) or phone...' }: SearchBarProps) {
   const [localValue, setLocalValue] = useState(value);
 
   const handleSubmit = (e: React.FormEvent) => {

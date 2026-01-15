@@ -13,10 +13,15 @@ export function useReceipts(searchQuery?: string) {
         .order('receipt_number', { ascending: false });
 
       if (searchQuery) {
-        const isNumeric = /^\d+$/.test(searchQuery);
+        // Check if it's a numeric search (receipt number) - strip leading zeros
+        const numericValue = parseInt(searchQuery, 10);
+        const isNumeric = /^\d+$/.test(searchQuery) && !isNaN(numericValue);
+        
         if (isNumeric) {
-          query = query.eq('receipt_number', parseInt(searchQuery));
+          // Search by receipt number (handles "0001", "1", "4869", etc.)
+          query = query.eq('receipt_number', numericValue);
         } else {
+          // Search by phone or customer name
           query = query.or(`customer_phone.ilike.%${searchQuery}%,customer_name.ilike.%${searchQuery}%`);
         }
       }

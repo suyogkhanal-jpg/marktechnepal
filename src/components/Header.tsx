@@ -28,7 +28,7 @@ export function Header() {
               <Monitor className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">Marine Trading</h1>
+              <h1 className="text-xl font-bold tracking-tight">Marktech Nepal</h1>
               <p className="text-xs text-primary-foreground/70">Customer Receipt Management</p>
             </div>
           </Link>
