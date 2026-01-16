@@ -37,25 +37,25 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
         ...labelFont
       }}
     >
-      {/* Header Tagline - Above the line */}
-      <div className="text-center" style={{ marginBottom: '2mm' }}>
+      {/* Header Tagline */}
+      <div className="text-center" style={{ marginBottom: '1.5mm' }}>
         <p style={{ 
           ...labelFont, 
-          fontSize: '9pt', 
+          fontSize: '8pt', 
           margin: 0, 
-          letterSpacing: '0.2px',
+          letterSpacing: '0.3px',
           textAlign: 'center'
         }}>
           Laptop, Desktop, Projector, Printer, and all kinds of computer Accessories maintenance and sales.
         </p>
       </div>
       
-      {/* Top Horizontal Line */}
+      {/* Top Horizontal Line - Below tagline */}
       <div style={{ 
         width: '100%', 
         height: '1px', 
         backgroundColor: '#000', 
-        marginBottom: '3mm'
+        marginBottom: '2.5mm'
       }}></div>
 
       {/* Header Section */}
@@ -221,25 +221,37 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
       </div>
 
       {/* Spacer to push bottom content down */}
-      <div style={{ flex: 1 }}></div>
+      <div style={{ flex: 1, minHeight: '5mm' }}></div>
 
       {/* Bottom Separator Line */}
       <div style={{ 
         width: '100%', 
         height: '1px', 
         backgroundColor: '#000', 
-        marginBottom: '3mm'
+        marginBottom: '2.5mm'
       }}></div>
+
+      {/* Tagline Above Return Slip */}
+      <div className="text-center" style={{ marginBottom: '2mm' }}>
+        <p style={{ 
+          ...labelFont, 
+          fontSize: '7.5pt', 
+          margin: 0, 
+          letterSpacing: '0.2px'
+        }}>
+          Laptop, Desktop, Projector, Printer, and all kinds of computer Accessories maintenance and sales.
+        </p>
+      </div>
 
       {/* Return Slip Notice */}
       <div className="text-center" style={{ marginBottom: '2mm' }}>
         <p style={{ 
           ...headerFont, 
-          fontSize: '14pt', 
+          fontSize: '13pt', 
           fontWeight: 900,
           margin: 0,
-          padding: '2.5mm 5mm',
-          border: '2px solid #000',
+          padding: '2mm 5mm',
+          border: '2.5px solid #000',
           display: 'inline-block',
           letterSpacing: '1.5px'
         }}>
