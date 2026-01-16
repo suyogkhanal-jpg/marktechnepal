@@ -141,8 +141,12 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
   };
 
   const addDevice = () => {
-    setDevices(prev => [...prev, createEmptyDevice()]);
+    if (devices.length < 3) {
+      setDevices(prev => [...prev, createEmptyDevice()]);
+    }
   };
+
+  const canAddMoreDevices = devices.length < 3;
 
   const removeDevice = (deviceId: string) => {
     if (devices.length > 1) {
@@ -452,15 +456,28 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
       <Card className="shadow-card border border-primary/30 bg-primary/5">
         <CardContent className="py-4">
           <div className="flex items-center justify-between flex-wrap gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={addDevice}
-              className="gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Next Device
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addDevice}
+                disabled={!canAddMoreDevices}
+                className="gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Next Device
+              </Button>
+              {!canAddMoreDevices && (
+                <span className="text-sm text-muted-foreground">
+                  Maximum 3 devices per receipt
+                </span>
+              )}
+              {canAddMoreDevices && devices.length > 0 && (
+                <span className="text-sm text-muted-foreground">
+                  {devices.length}/3 devices
+                </span>
+              )}
+            </div>
             <Button type="submit" size="lg" disabled={isSubmitting} ref={submitRef}>
               {isSubmitting ? (
                 <>
