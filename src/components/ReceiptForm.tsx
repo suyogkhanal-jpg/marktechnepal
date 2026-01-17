@@ -167,6 +167,9 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
       ? receivedDate.toISOString().split('T')[0] // Use date only (YYYY-MM-DD)
       : new Date().toISOString().split('T')[0];
 
+    // Generate a shared group_id for all devices in this receipt
+    const sharedGroupId = crypto.randomUUID();
+
     try {
       let lastResult: any = null;
       for (let i = 0; i < devices.length; i++) {
@@ -180,7 +183,8 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
           problem_description: device.problem_description || '',
           accessories: device.has_accessories && device.accessories_text ? device.accessories_text : null,
           device_password: device.has_password_lock && device.device_password ? device.device_password : null,
-          received_date: sharedReceivedDate, // Same date for all devices
+          received_date: sharedReceivedDate,
+          group_id: sharedGroupId, // Same group_id for all devices
         };
 
         lastResult = await createReceipt.mutateAsync(submitData);

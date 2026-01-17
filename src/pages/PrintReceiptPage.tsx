@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { useReceipt, useCustomerReceipts } from '@/hooks/useReceipts';
+import { useReceipt, useGroupedReceipts } from '@/hooks/useReceipts';
 import { PrintReceipt } from '@/components/PrintReceipt';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,18 +9,18 @@ export default function PrintReceiptPage() {
   const { id } = useParams<{ id: string }>();
   const { data: receipt, isLoading: receiptLoading } = useReceipt(id);
   
-  // Fetch all receipts for the same customer on the same date
-  const { data: customerReceipts, isLoading: customerReceiptsLoading } = useCustomerReceipts(
-    receipt?.customer_phone,
-    receipt?.received_date
+  // Fetch all receipts in the same group
+  const { data: groupedReceipts, isLoading: groupedReceiptsLoading } = useGroupedReceipts(
+    receipt?.group_id
   );
 
   const handlePrint = () => {
     window.print();
   };
 
-  const isLoading = receiptLoading || customerReceiptsLoading;
-  const receiptsToShow = customerReceipts && customerReceipts.length > 0 ? customerReceipts : (receipt ? [receipt] : []);
+  const isLoading = receiptLoading || groupedReceiptsLoading;
+  // Use grouped receipts if group_id exists, otherwise just show single receipt
+  const receiptsToShow = groupedReceipts && groupedReceipts.length > 0 ? groupedReceipts : (receipt ? [receipt] : []);
 
   if (isLoading) {
     return (
@@ -56,7 +56,7 @@ export default function PrintReceiptPage() {
           </Button>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">
-              {receiptsToShow.length} device(s) for this customer
+              {receiptsToShow.length} device(s) in this receipt
             </span>
             <Button onClick={handlePrint}>
               <Printer className="w-4 h-4 mr-2" />

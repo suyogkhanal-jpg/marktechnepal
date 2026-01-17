@@ -50,25 +50,21 @@ export function useReceipt(id: string | undefined) {
   });
 }
 
-// Fetch all receipts for the same customer (by phone) on the same date
-export function useCustomerReceipts(customerPhone: string | undefined, receivedDate: string | undefined) {
-  // Extract just the date part for comparison (YYYY-MM-DD)
-  const dateOnly = receivedDate ? receivedDate.split('T')[0] : undefined;
-  
+// Fetch all receipts in the same group (by group_id)
+export function useGroupedReceipts(groupId: string | null | undefined) {
   return useQuery({
-    queryKey: ['customer-receipts', customerPhone, dateOnly],
+    queryKey: ['grouped-receipts', groupId],
     queryFn: async () => {
-      if (!customerPhone || !dateOnly) return [];
+      if (!groupId) return [];
       const { data, error } = await supabase
         .from('receipts')
         .select('*')
-        .eq('customer_phone', customerPhone)
-        .eq('received_date', dateOnly)
+        .eq('group_id', groupId)
         .order('receipt_number', { ascending: true });
       if (error) throw error;
       return data as Receipt[];
     },
-    enabled: !!customerPhone && !!dateOnly,
+    enabled: !!groupId,
   });
 }
 
@@ -76,7 +72,7 @@ export function useCreateReceipt() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (formData: ReceiptFormData) => {
+    mutationFn: async (formData: ReceiptFormData & { received_date?: string; group_id?: string }) => {
       const insertData = {
         customer_name: formData.customer_name,
         customer_phone: formData.customer_phone,
@@ -87,6 +83,8 @@ export function useCreateReceipt() {
         problem_description: formData.problem_description,
         estimated_delivery_date: formData.estimated_delivery_date || null,
         device_password: formData.device_password || null,
+        received_date: formData.received_date || new Date().toISOString(),
+        group_id: formData.group_id || null,
       } as any;
 
       const { data, error } = await supabase
@@ -100,6 +98,7 @@ export function useCreateReceipt() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['receipts'] });
+      queryClient.invalidateQueries({ queryKey: ['grouped-receipts'] });
       toast.success('Receipt created successfully');
     },
     onError: (error) => {

@@ -50,6 +50,7 @@ export type Database = {
           device_password: string | null
           device_type: string
           estimated_delivery_date: string | null
+          group_id: string | null
           id: string
           problem_description: string
           receipt_number: number
@@ -70,6 +71,7 @@ export type Database = {
           device_password?: string | null
           device_type: string
           estimated_delivery_date?: string | null
+          group_id?: string | null
           id?: string
           problem_description: string
           receipt_number: number
@@ -90,6 +92,7 @@ export type Database = {
           device_password?: string | null
           device_type?: string
           estimated_delivery_date?: string | null
+          group_id?: string | null
           id?: string
           problem_description?: string
           receipt_number?: number
