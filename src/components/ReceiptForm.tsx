@@ -162,7 +162,13 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Use a single timestamp for all devices in this submission
+    const sharedReceivedDate = receivedDate 
+      ? receivedDate.toISOString().split('T')[0] // Use date only (YYYY-MM-DD)
+      : new Date().toISOString().split('T')[0];
+
     try {
+      let lastResult: any = null;
       for (let i = 0; i < devices.length; i++) {
         const device = devices[i];
         const submitData = {
@@ -174,19 +180,20 @@ export function ReceiptForm({ onSuccess }: ReceiptFormProps) {
           problem_description: device.problem_description || '',
           accessories: device.has_accessories && device.accessories_text ? device.accessories_text : null,
           device_password: device.has_password_lock && device.device_password ? device.device_password : null,
-          received_date: receivedDate ? receivedDate.toISOString() : new Date().toISOString(),
+          received_date: sharedReceivedDate, // Same date for all devices
         };
 
-        const result = await createReceipt.mutateAsync(submitData);
-        
-        if (i === devices.length - 1) {
-          setCustomerName('');
-          setCustomerPhone('');
-          setReceivedDate(new Date());
-          setDevices([createEmptyDevice()]);
-          setShowPasswords({});
-          onSuccess?.(result.id);
-        }
+        lastResult = await createReceipt.mutateAsync(submitData);
+      }
+      
+      // Reset form after all devices created
+      setCustomerName('');
+      setCustomerPhone('');
+      setReceivedDate(new Date());
+      setDevices([createEmptyDevice()]);
+      setShowPasswords({});
+      if (lastResult) {
+        onSuccess?.(lastResult.id);
       }
     } catch (error) {
       console.error('Error creating receipt:', error);
