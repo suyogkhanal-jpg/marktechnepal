@@ -3,6 +3,7 @@ export type ReceiptStatus = 'received' | 'in_progress' | 'completed' | 'delivere
 export interface Receipt {
   id: string;
   receipt_number: number;
+  group_id: string | null;
   customer_name: string;
   customer_phone: string;
   customer_email: string | null;
@@ -32,4 +33,5 @@ export interface ReceiptFormData {
   accessories?: string | null;
   problem_description: string;
   estimated_delivery_date?: string;
+  group_id?: string;
 }
