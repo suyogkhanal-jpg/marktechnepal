@@ -52,20 +52,23 @@ export function useReceipt(id: string | undefined) {
 
 // Fetch all receipts for the same customer (by phone) on the same date
 export function useCustomerReceipts(customerPhone: string | undefined, receivedDate: string | undefined) {
+  // Extract just the date part for comparison (YYYY-MM-DD)
+  const dateOnly = receivedDate ? receivedDate.split('T')[0] : undefined;
+  
   return useQuery({
-    queryKey: ['customer-receipts', customerPhone, receivedDate],
+    queryKey: ['customer-receipts', customerPhone, dateOnly],
     queryFn: async () => {
-      if (!customerPhone || !receivedDate) return [];
+      if (!customerPhone || !dateOnly) return [];
       const { data, error } = await supabase
         .from('receipts')
         .select('*')
         .eq('customer_phone', customerPhone)
-        .eq('received_date', receivedDate)
+        .eq('received_date', dateOnly)
         .order('receipt_number', { ascending: true });
       if (error) throw error;
       return data as Receipt[];
     },
-    enabled: !!customerPhone && !!receivedDate,
+    enabled: !!customerPhone && !!dateOnly,
   });
 }
 
