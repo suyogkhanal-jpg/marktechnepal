@@ -67,7 +67,7 @@ export default function PrintReceiptPage() {
       </div>
 
       {/* Print Preview */}
-      <div className="p-6">
+      <div className="p-6 flex justify-center">
         <PrintReceipt receipts={receiptsToShow} />
       </div>
     </div>

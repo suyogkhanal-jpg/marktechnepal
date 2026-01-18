@@ -28,9 +28,9 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
     <div 
       className="receipt-print bg-white text-black"
       style={{ 
-        width: '148mm',
-        minHeight: '210mm',
-        padding: '5mm 4mm',
+        width: '210mm',
+        height: '148mm',
+        padding: '6mm 8mm',
         boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
