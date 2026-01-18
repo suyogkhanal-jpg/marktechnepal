@@ -178,15 +178,15 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
         </tbody>
       </table>
 
-      {/* Terms & Conditions with सूचना */}
-      <div className="text-center" style={{ fontSize: '8.5pt', lineHeight: 1.25, marginBottom: '1mm' }}>
-        <p style={{ margin: 0, fontWeight: 600 }}>सूचना</p>
-        <p style={{ margin: 0 }}>मर्मतका लागि छाडिएको सामान २ महिनासम्म लिन नआएमा हराए वा बिग्रिएमा त्यसको</p>
-        <p style={{ margin: 0 }}>जिम्मेवाही कम्पनीले लिने छैन।</p>
+      {/* Terms & Conditions with सूचना - Left aligned */}
+      <div style={{ fontSize: '8.5pt', lineHeight: 1.25, marginBottom: '1mm', textAlign: 'left' }}>
+        <p style={{ margin: 0 }}>
+          <span style={{ fontWeight: 600 }}>सूचना:</span> मर्मतका लागि छाडिएको सामान २ महिनासम्म लिन नआएमा हराए वा बिग्रिएमा त्यसको जिम्मेवाही कम्पनीले लिने छैन।
+        </p>
       </div>
 
       {/* VAT Notice with asterisk */}
-      <div className="text-center" style={{ marginBottom: '1.5mm' }}>
+      <div style={{ marginBottom: '1.5mm', textAlign: 'left' }}>
         <p style={{ ...labelFont, fontSize: '9pt', margin: 0 }}>
           * मर्मत खर्चमा अतिरिक्त मूल्य अभिवृद्धि कर (VAT) लाग्नेछ।
         </p>
@@ -194,6 +194,18 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
 
       {/* Spacer to push bottom content down */}
       <div style={{ flex: 1, minHeight: '1mm' }}></div>
+
+      {/* Signature Section */}
+      <div className="flex justify-between" style={{ marginBottom: '2mm', padding: '0 10mm' }}>
+        <div style={{ textAlign: 'center', width: '40mm' }}>
+          <div style={{ borderBottom: '1px solid #000', marginBottom: '1mm', height: '6mm' }}></div>
+          <p style={{ ...labelFont, fontSize: '8pt', margin: 0 }}>Edd</p>
+        </div>
+        <div style={{ textAlign: 'center', width: '40mm' }}>
+          <div style={{ borderBottom: '1px solid #000', marginBottom: '1mm', height: '6mm' }}></div>
+          <p style={{ ...labelFont, fontSize: '8pt', margin: 0 }}>For Ns</p>
+        </div>
+      </div>
 
       {/* Return Slip Notice */}
       <div className="text-center" style={{ marginBottom: '1.5mm' }}>
