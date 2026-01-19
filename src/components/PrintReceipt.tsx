@@ -178,15 +178,15 @@ export function PrintReceipt({ receipts }: PrintReceiptProps) {
         </tbody>
       </table>
 
-      {/* Terms & Conditions with सूचना - Left aligned */}
-      <div style={{ fontSize: '8.5pt', lineHeight: 1.25, marginBottom: '1mm', textAlign: 'left' }}>
+      {/* Terms & Conditions with सूचना - Centered */}
+      <div className="text-center" style={{ fontSize: '8.5pt', lineHeight: 1.25, marginBottom: '1mm' }}>
         <p style={{ margin: 0 }}>
           <span style={{ fontWeight: 600 }}>सूचना:</span> मर्मतका लागि छाडिएको सामान २ महिनासम्म लिन नआएमा हराए वा बिग्रिएमा त्यसको जिम्मेवाही कम्पनीले लिने छैन।
         </p>
       </div>
 
-      {/* VAT Notice with asterisk */}
-      <div style={{ marginBottom: '1.5mm', textAlign: 'left' }}>
+      {/* VAT Notice with asterisk - Centered */}
+      <div className="text-center" style={{ marginBottom: '1.5mm' }}>
         <p style={{ ...labelFont, fontSize: '9pt', margin: 0 }}>
           * मर्मत खर्चमा अतिरिक्त मूल्य अभिवृद्धि कर (VAT) लाग्नेछ।
         </p>
